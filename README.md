@@ -1,4 +1,4 @@
-# lfn2324
+# How well do Simple Graph Convolution and GraphSAGE perform on Dihydrofolate reductase inhibition learning problem?
 
 for the moment work with only `DHFR` dataset, consider modified `DHFR-MD` later
 
@@ -104,6 +104,7 @@ Fill in the table with the computed z-scores and p-values, final column for deci
 | graphlet 3 |  |  |  |
 | graphlet ... |  |  |  |
 
+![](img/zScores_DHFR-500.png)
 how can you deal with multiple random collections from the two different random generation methods ? #think maybe it's better to make a *box plot*...
 
 # 0. Random classifier
