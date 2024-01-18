@@ -178,11 +178,18 @@ conclusion ...
 # References 
 
 <a id="1">[1]</a> S. R et al., “DihydrofolateReductase (DHFR) Inhibitors: A Comprehensive Review,” Current medicinal chemistry, Mar. 2023, doi: [10.2174/0929867330666230310091510](https://doi.org/10.2174/0929867330666230310091510).
+
 <a id="2">[2]</a> J. J. Sutherland, L. A. O’Brien, and D. F. Weaver, “Spline-fitting with a genetic algorithm: A method for developing classification structure-activity relationships,” J Chem Inf Comput Sci,
 vol. 43, no. 6, pp. 1906–1915, 2003, doi: [10.1021/ci034143r](https://doi.org/10.1021/ci034143r).
+
 <a id="3">[3]</a> C. Morris, N. M. Kriege, F. Bause, K. Kersting, P. Mutzel, and M. Neumann, “TUDataset: A collection of benchmark datasets for learning with graphs.” Accessed: Nov. 04, 2023. [ArXiv](http://arxiv.org/abs/2007.08663)
+
 <a id="4">[4]</a> R. A. Rossi and N. K. Ahmed, “The Network Data Repository with Interactive Graph Analytics and Visualization,” in AAAI, 2015. [networkrepository.com](https://networkrepository.com).
+
 <a id="5">[5]</a> F. Wu, A. Souza, T. Zhang, C. Fifty, T. Yu, and K. Weinberger, “Simplifying Graph Convolutional Networks,” in Proceedings of the 36th International Conference on Machine Learning, PMLR, May 2019, pp. 6861–6871. Accessed: Oct. 21, 2023. [Online](https://proceedings.mlr.press/v97/wu19e.html)
+
 <a id="6">[6]</a> W. L. Hamilton, R. Ying, and J. Leskovec, “Inductive Representation Learning on Large Graphs.” Accessed: Nov. 08, 2023. [ArXiv](http://arxiv.org/abs/1706.02216)
+
 <a id="7">[7]</a> B. Perozzi, R. Al-Rfou, and S. Skiena, “Deep Walk: Online learning of social representations,” in Proceedings of the 20th ACM SIGKDD international conference on Knowledge discovery and data mining, in KDD ’14. New York, NY, USA: Association for Computing Machinery, Aug. 2014, pp. 701–710. doi: [10.1145/2623330.2623732](https://doi.org/10.1145/2623330.2623732).
+
 <a id="8">[8]</a>  I. Kononenko and I. Bratko, Information-based evaluation criterion for classifier' s performance, Mach Learn, vol. 6, no. 1, pp. 67, 80, Jan. 1991, doi: [10.1007/BF00153760](https://doi.org/10.1007/BF00153760)
