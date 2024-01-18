@@ -1,6 +1,7 @@
 # How well do Simple Graph Convolution and GraphSAGE perform on Dihydrofolate reductase inhibition learning problem?
 
 ## <a id='§0'></a>Contents
+[Introduction][#§I]
 
 [1.](#§1) Statistically significant features
 + Random graph generation
@@ -9,9 +10,19 @@
 
 [2.](#2) Random classifier
 
+[3.](#§3) Traditional ML classifier
 
+[4.](#§4) DeepWalk + traditional
 
-## Introduction
+[5.](#§5) Simple Graph Convolution
+
+[6.](#§6) GraphSAGE
+
+[7.](#§7) Classification performance 
+
+[References](#§R)
+
+## <a id="§I"></a> Introduction [\^](#§0)
 
 
 # ~~Storing operations on graph collections~~
@@ -100,14 +111,14 @@ Fill in the table with the computed z-scores and p-values, final column for deci
 ![](img/zScores_DHFR-500.png)
 how can you deal with multiple random collections from the two different random generation methods ? #think maybe it's better to make a *box plot*...
 
-# 0. Random classifier
+# <a id="§2">2.</a> Random classifier [\^](#§0)
 
 tossing a coin, many times to get an idea of the average
 
 how is this related to the sample prir distribution of graph labels in the original dataset ? is this distribution preserved by the 
 #think is it sound to use the same entropy for both training and validation sets by computing the entropy from the whole dataset ?
 
-# 1. Traditional ML classifier
+# <a id="§3">3.</a> Traditional ML classifier [\^](#§0)
 
 This approach is not inductive. The model requires a fixed input dimension, but here we are classifying graphs with a variable number of nodes. A way to condense node information is needed :
 
@@ -121,7 +132,7 @@ hidden layer size, drop probability, number of epochs, (optimized hyperparameter
 
 Logistic regression (linear model) used in GraphSAGE paper
 
-# 2. DeepWalk + traditional
+# <a id="§4">4.</a> DeepWalk + traditional [\^](#§0)
 
 Compute embeddings with PyG, how ? #todo see tutorial by ALonga UNITN, adapt jupyter code from node2vec implementation. There is a `node2vec.py` example in the official PyG repo, can you adapt it to run with deepwalk? #think about using node2vec instead of deepwalk since it's already implemented in PyG
 #tfo what's the difference between deepwalk and node2vec ?
@@ -138,19 +149,22 @@ There are two methods for performing classification of entire graphs: either a f
 + the `DHFR` node attributes correspond to absolute positions $x_v\in \R^3$ of the atoms $v\in V$ in the molecule $G=\tpl{V,E}$. It seems meeningful to compute the dimensions of the resulting *convex hull* for every graph by considering all positions $X\in\M_{\R}^{\crd{V}\times 3}$ and computing the eig.val.s of $X^T X$ (it's a positive number, so the square does not bother)
 + other analytical features should be deduced combining the information on the original graph's analytical fetures which should be unaffected by the addition of the artificial node. To this end, it is customary to use the sample mean of the original features.
 
+# <a id="§5">5.</a> Simple Graph Convolution [\^](#§0)
 
-# 3. GraphSAGE
+#tfo what's the input ? is this a full fledge pipeline ? maybe not
+
+there is an example on the official PyG repo `sgc.py`
+
+# <a id="§6">6.</a> GraphSAGE [\^](#§0)
 
 #tfo what's the input? the input should be the external and significant features as this method takes care of the whole pipeline (embedding and predicting model)
 
 there is an example on the official PyG repo: `graph_sage_unsup.py` #todo modify to add graph representation and labels (supervised)
 
-# 4. Simple Graph Convolution
 
-#tfo what's the input ? is this a full fledge pipeline ? maybe not
+# <a id="§7">7.</a> Classification performance [\^](#§0)
 
-there is an example on the official PyG repo `sgc.py`
-# Model comparison (information scores)
+## information score
 
 From [@kononenkoInformationbasedEvaluationCriterion1991] the proposed information score (relative) is $$I_r = I_a/E \quad I_a = \frac 1 T \sum_j I(j) \quad I:{\set{1,\dots, k}\atop C}{\to \atop\mapsto}{\R \cap (-\infty, 1]\atop \begin{cases} V_c(C) & P'(C)\geq P(C) \\ V_m(C) & \text{otw} \end{cases}}$$ where:
 
@@ -173,7 +187,7 @@ where intuitively #todo summarize intuition from wikipedia page
 
 #tfo difference with Fisher information score [@lyTutorialFisherInformation2017]
 
-
+## Final results
 Final comparison table should look like the following, recall that all values **should be given** as pair of expected value and sample variance ! #think Instead of a table, you could make a plot ... 
 
 | classifier | input | F1-score | accuracy | I-score|
@@ -184,10 +198,8 @@ Final comparison table should look like the following, recall that all values **
 | GraphSAGE | ? |  |  |  |
 | SGC | ? |  |  |  |
 
-conclusion ...
 
-
-# References 
+# <a id="§R"></a> References [\^](#§0)
 
 <a id="1">[1]</a> S. R et al., “DihydrofolateReductase (DHFR) Inhibitors: A Comprehensive Review,” Current medicinal chemistry, Mar. 2023, doi: [10.2174/0929867330666230310091510](https://doi.org/10.2174/0929867330666230310091510).
 
