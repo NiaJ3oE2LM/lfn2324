@@ -1,6 +1,6 @@
 # How well do Simple Graph Convolution and GraphSAGE perform on Dihydrofolate reductase inhibition learning problem?
 
-for the moment work with only `DHFR` dataset, consider modified `DHFR-MD` later
+for the moment work with only `DHFR` dataset, consider modified `DHFR-MD` later [[1]](#1)
 
 Plan - 1st run :
 
@@ -193,3 +193,12 @@ Final comparison table should look like the following, recall that all values **
 
 conclusion ...
 
+
+# References 
+
+## Articles and books
+
+<a id="1">[1]</a> S. R et al., “DihydrofolateReductase (DHFR) Inhibitors: A Comprehensive Review,” Current medicinal chemistry, Mar. 2023, doi: [10.2174/0929867330666230310091510](https://doi.org/10.2174/0929867330666230310091510).
+
+
+## Software
