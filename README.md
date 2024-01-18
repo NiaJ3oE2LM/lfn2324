@@ -1,8 +1,13 @@
-How well do Simple Graph Convolution and GraphSAGE perform on Dihydrofolate reductase inhibition learning problem?
-# Introduction
+# How well do Simple Graph Convolution and GraphSAGE perform on Dihydrofolate reductase inhibition learning problem?
+
+## Contents
+
+[1](#§1) Statistically significant features
+
+## Introduction
 
 
-# Storing operations on graph collections
+# ~~Storing operations on graph collections~~
 
 Consider the original `DHFR` dataset.
 
@@ -27,7 +32,7 @@ Handling graph classification from node features:
 2. Edges can be added by writing the corresponding entries in the adjacency matrix `A` file. Since the artificial node is adjacent to all nodes, for a generic graph $G=\tpl{V,E}$ in the collection, $2n=2\crd{V}$ edges need to be written (graphs are undirected) - for each graph #check is this true ?
 3. The creation of this modified collection is done only once, as the only thing that might chage during operations si the embedding of the artificial node.
 
-# Statistically significant features
+# <a id="§1">1.</a> Statistically significant features
 
 **Goal**:  compute z-scores and p-values on traditional graph analytics in order to choose which features to be added to the external features before node embedding procedures.
 
