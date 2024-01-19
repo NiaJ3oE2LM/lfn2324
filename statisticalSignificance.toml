@@ -1,0 +1,13 @@
+# figure
+out_folder= 'img'
+out_name= 'statisticalSignificance'
+title= 'remember to fix Nan values'
+
+# random collections processing
+root_folder= 'random'
+consider_share= 0.2
+feats_name= ['node degree','closeness','betweenness','node cluster']
+
+# job handling
+num_jobs= 1
+batch_size= 5

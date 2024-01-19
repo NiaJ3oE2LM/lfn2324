@@ -1,0 +1,37 @@
+# job handling
+save= true
+out_folder= 'SimpleGC'
+device= 'cuda'
+num_jobs= 1 
+
+# dataset
+root_folder= 'computed'
+data_name= '20240115-105053'
+seed_name= 'seedSequence_p10'
+
+# model 
+batch_size= 10
+hidden_dim= 6
+# layer 1
+conv1.depth= 2
+conv1.activation= true
+conv1.selfloops= true
+conv1.hasbias= true
+# layer 2
+conv2.switch= false
+conv2.depth= 1
+conv2.activation= false
+conv2.selfloops= false
+conv2.hasbias= false
+# TODO global mean pool aggregator
+
+# optimizer
+learning_rate= 4e-3
+weight_decay= 1e-8
+
+
+# trainig
+test_share= 0.3
+max_epochs= 300
+ma_window= 100
+ma_threshold= 1e-3

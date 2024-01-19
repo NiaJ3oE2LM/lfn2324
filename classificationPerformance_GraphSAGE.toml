@@ -1,0 +1,17 @@
+# figure
+out_folder= 'img'
+out_name= 'tuningGraphSAGE'
+title= ''
+
+# true labels (same root folder)
+true_data = '20240115-105053_output'
+
+# model label= predicitonFiles in root_folder (without .pt)
+root_folder= 'computed'
+[model_defs]
+'rand. class.'= 'randomClassifier'
+#'trad. ML'= 'traditionalML_20240115-181619.pt'
+'hdim 2 ep.10'= 'GraphSAGE/'
+'GraphSAGE3'= 'GraphSAGE/'
+'hdim 2 ep.200'= 'GraphSAGE/'
+

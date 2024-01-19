@@ -1,0 +1,7 @@
+MLP(
+  (linear1): Linear(in_features=14, out_features=30, bias=True)
+  (activation): ReLU()
+  (linear2): Linear(in_features=30, out_features=2, bias=True)
+  (softmax): Softmax(dim=1)
+)
+max epochs: 1000, moving average: 50

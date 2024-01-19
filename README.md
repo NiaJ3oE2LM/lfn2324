@@ -1,7 +1,7 @@
 # How well do Simple Graph Convolution and GraphSAGE perform on Dihydrofolate reductase inhibition learning problem?
 
 ## <a id='§0'></a>Contents
-[Introduction][#§I]
+[Introduction](#§I)
 
 [1.](#§1) Statistically significant features
 + Random graph generation
@@ -22,8 +22,39 @@
 
 [References](#§R)
 
-## <a id="§I"></a> Introduction [\^](#§0)
+## <a id="§I">•</a> Introduction [\^](#§0)
 
+
+With biological applications in mind, we consider the Dihydrofolate reductase datasets in order to study the performance of two graph-based, learning methods: Simple Graph Convolution and GraphSAGE.
+
+Graph Convolutional Networks (GCNs) are a variant of Convolutional Neural Networks (CNNs) that might inherit unnecessary complexity. A simpler version, termed Simple Graph Convolution (SGC), can be framed by discarding non-linear layer activation functions and condensing the resulting parameters.
+GraphSAGE, on the other hand, is a variant of GCN that aims to generate inductive vector representations for nodes. It is mainly designed for classification tasks and can generate embeddings for unseen nodes. 
+
+Context
+
+Dihydrofolate reductase (DHFR) is an enzyme required for the survival of most cells as it is involved in the biosynthesis of essential cellular components: for this reason, it has attracted a lot of attention as a molecular target for various diseases. Researchers have reported different DHFR inhibitors in order to explore their therapeutic efficacy. [@rDihydrofolateReductaseDHFRInhibitors2023].
+
+A set of 756 inhibitors of DHFR was assembled: activities for a particular strain of  DHFR were reported as $\mathrm{IC_{50}}$ values for the inhibition of the enzymatic reduction that converts dihydrofolate to tetrahydrofolate. A certain value was selected as the threshold for activity. [@sutherlandSplinefittingGeneticAlgorithm2003].
+
+Data
+
+The original dataset DHFR is available at [chrsmrrs.github.io](https://chrsmrrs.github.io/datasets/docs/datasets/) [@morrisTUDatasetCollectionBenchmark2020]. The collection of networks is structured as follows:
+
+* each inhibitor (molecule) is represented as a graph: nodes are associated to atoms, while edges represent chemical bonds;
+* nodes are labeled with the name of the chemical element and 3 real-valued attributes represent the relative position of the atom (node) in the chemical compound (inhibitor);
+* the inhibiting property of each graph (chemical compound) is given as a graph-level binary label (+1,-1);
+* edges are given as tuples of nodes and have neither attributes nor labels.
+
+
+A modified dataset DHFR-MD is available at [networkrepository.com](https://networkrepository.com/DHFR-MD.php) [@rossiNetworkDataRepository2015]. The collection of networks is structured as follows:
+
+* inhibitors (a subset of 393 chemical compounds) are represented as fully connected graphs;
+* node labels encode the name of the atom (same as the original dataset);
+* edge attributes report the computed distance between bonded (adjacent) atoms, while edge labels describe the type of the chemical bond;
+* inhibiting property on DHFR of each chemical compound is given as a graph-level binary label (+1,-1, same as the original dataset)
+
+
+\input{table_DHFRdimension}
 
 # ~~Storing operations on graph collections~~
 
@@ -199,7 +230,7 @@ Final comparison table should look like the following, recall that all values **
 | SGC | ? |  |  |  |
 
 
-# <a id="§R"></a> References [\^](#§0)
+# <a id="§R">•</a> References [\^](#§0)
 
 <a id="1">[1]</a> S. R et al., “DihydrofolateReductase (DHFR) Inhibitors: A Comprehensive Review,” Current medicinal chemistry, Mar. 2023, doi: [10.2174/0929867330666230310091510](https://doi.org/10.2174/0929867330666230310091510).
 

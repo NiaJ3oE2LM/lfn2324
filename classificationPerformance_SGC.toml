@@ -1,0 +1,20 @@
+# figure
+out_folder= 'img'
+out_name= 'tuningSGC'
+title= '1 layer (selfloops,activ., bias):true ep.200'
+
+# true labels (same root folder)
+true_data = '20240115-105053_output'
+
+# model label= predicitonFiles in root_folder (without .pt)
+root_folder= 'computed'
+[model_defs]
+'rand. class.'= 'randomClassifier'
+#'trad. ML'= 'traditionalML_20240115-181619.pt'
+#'k:1 hdim. 5'= 'SimpleGC/240119-111229'
+#'k:2 hdim. 5'= 'SimpleGC/240119-111240'
+'k:1 hdim. 6'= 'SimpleGC/240119-113851'
+'k:2 hdim. 6'= 'SimpleGC/240119-113839'
+'k:1 hdim. 6 ep.300'= 'SimpleGC/240119-125403'
+'k:2 hdim. 6 ep.300'= 'SimpleGC/240119-125514'
+
