@@ -24,9 +24,9 @@ import tomllib
 from pprint import pprint
 import argparse
 
+DEVICE='cpu'
 
 # %% load parameters from toml file
-DEVICE='cpu'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("configFilePath")
@@ -49,76 +49,76 @@ define a tensor of dimension 3 where the indeces have the following meaning:
     2. sample among different random seeds
     3. DHFR graph index <- to be condensed by the performance score
 """
-modelPreds = stack([load(modelPath).to(DEVICE) for modelPath in modelPaths])
+modelProbs = stack([load(modelPath).to(DEVICE) for modelPath in modelPaths])
 modelTrues = load(osp.join(ARGS['root_folder'], ARGS['true_data']+'.pt'))
 
 
 # %% define information score
 
-def naiveScore(predictions:tensor, trueClasses:tensor) -> tensor:
+def naiveScore(predProbs:tensor, trueClasses:tensor) -> tensor:
     """
     simply count errors, condenses the second dimension to 1
     """
+    predictions= predProbs.argmax(dim=2)
     assert predictions.shape[1] == trueClasses.shape[1]
     assert len(predictions.shape)==2
-    # n: random seeds, d: graphs in DHFR (756)
-    n,d = predictions.shape
-    count = zeros([n,d])
-    count[where(predictions == trueClasses.repeat([n,1]))]=1
-    return count.sum(dim=1)/d
+    # r: random seeds, n: graphs in DHFR (756)
+    r,n = predictions.shape
+    count = zeros([r,n])
+    count[where(predictions == trueClasses.repeat([r,1]))]=1
+    return count.sum(dim=1)/n
 
 
-def informationScore(predictions:tensor, trueClasses:tensor) -> tensor:
+def informationScore(predProbs:tensor, trueClasses:tensor) -> tensor:
     """ [KonBra91]
+    predProbs (expected )shape: num_seeds * num_graphs * num_classes
+    trueClasses (expected) shape: 1* num_graphs
     """
-    assert predictions.shape[1] == trueClasses.shape[1]
-    assert len(predictions.shape)==2
-    # n: random seeds, d: graphs in DHFR (756)
-    n,d = predictions.shape
+    assert predProbs.shape[1] == trueClasses.shape[1]
+    assert predProbs.shape[2]==2 # classes {0,1}
+    # ensure probability normalization
+    predProbs = predProbs / predProbs.sum(dim=2, keepdim= True).repeat([1,1,2])
+    assert predProbs[0,0].sum()==1
+    # r: random seeds, n: graphs in DHFR (756)
+    r, ng, _ = predProbs.shape
     # prior distributions (relative frequencies)
-    priorCount = zeros([2,1,d])
-    i, j = where(trueClasses==0)
-    priorCount[0,i,j]= 1
-    i, j= where(trueClasses==1)
-    priorCount[1,i,j]= 1
-    prior = tensor([priorCount[0].count_nonzero(dim=1), 
-                    priorCount[1].count_nonzero(dim=1)])/d
+    priorCount = zeros(predProbs.shape)
+    for c in range(2):
+        _, j = where(trueClasses==c)
+        priorCount[:,j,c]= 1
+    
+    freq = priorCount.count_nonzero(dim=1)/ng
     # compute entropy
-    entr = -inner(prior, log2(prior))
-    prior = prior.repeat([n,1])
-    # posterior distributions (relative frequencies)
-    postCount = zeros([2,n,d])
-    i, j = where(predictions==0)
-    postCount[0,i,j]= 1
-    i, j= where(predictions==1)
-    postCount[1,i,j]= 1
-    post = stack([postCount[0].count_nonzero(dim=1), 
-                  postCount[1].count_nonzero(dim=1)], dim=1)/d
+    entr = -inner(freq[0], log2(freq[0]))
+    prior = stack([freq for i in range(ng)], dim=1)
     # information score eq. (4)(5)(6) -> relative average eq. (7)(8)
-    score= zeros([n]) # one for each random seed
-    assert prior.shape==post.shape
+    score= zeros(predProbs.shape) # one for each random seed
     for c in range(2): # loop available classes
         # j identifies the graphs among the 756
-        _, j= where(trueClasses==c)
+        _, k= where(trueClasses==c)
         # i identifies the samples among the seed sequence
-        i = where(post[:,c] > prior[:,c])
-        if len(i[0])>0 : # post > prior (useful prediction)
-            score[i] += (-log2(prior[i][:,c])+ log2(post[i][:,c]))*len(j)/d
-        i = where(post[:,c]<=prior[:,c])
-        if len(i[0])>0 : # post < prior (misleading prediction)
-            score[i] += (log2(1-prior[i][:,c])- log2(1-post[i][:,c]))*len(j)/d
+        post_c = predProbs[:,k,c]
+        prior_c = prior[:,k,c]
+        i, j = where(post_c >= prior_c)
+        if len(i)>0 : # post > prior (useful prediction)
+            score[i,j,c] = -log2(prior_c[i,j])+ log2(post_c[i,j])
+        i, j = where(post_c < prior_c)
+        if len(i)>0 : # post < prior (misleading prediction)
+            score[i,j,c] = log2(1-prior_c[i,j])- log2(1-post_c[i,j])
     
-    return score/entr
+    return score.sum(dim=[1,2])/ng/entr
 
 
 # %% compute score
-scoresNaive= stack([naiveScore(preds,modelTrues.t()) for preds in modelPreds])
+scoresNaive= stack([naiveScore(probs,modelTrues.t())
+                    for probs in modelProbs.detach()])
 
-scoresInfo= stack([informationScore(preds,modelTrues.t()) for preds in modelPreds])
+scoresInfo= stack([informationScore(probs,modelTrues.t())
+                   for probs in modelProbs.detach()])
 
 # %% generate box and whiskers plot and save
 fig, axs= plt.subplots(1,2)
-fig.suptitle(f"{ARGS['title']} ({modelPreds.shape[1]} seeds)")
+fig.suptitle(f"{ARGS['title']} ({modelProbs.shape[1]} seeds)")
 
 # generate box plot
 axs[0].set_title("correct predictions")
@@ -129,9 +129,9 @@ axs[1].boxplot(scoresInfo.t().numpy())
 # format axes
 lbs = [l for l in modelDefs.keys()]
 for ax in axs:
-    ax.set_xticks([i+1 for i in range(len(lbs))],labels=lbs, rotation=60)
+    ax.set_xticks([i+1 for i in range(len(lbs))],labels=lbs, rotation=90)
     # TODO add file names under the label with smaller size
-    #ax.set_ylim(0,1)
+    
 
 fig.tight_layout()
 # save figure and log

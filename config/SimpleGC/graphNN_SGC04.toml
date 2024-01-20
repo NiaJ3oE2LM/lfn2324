@@ -25,14 +25,9 @@ from tqdm import tqdm
 # configuration and logging
 import tomllib
 from pprint import pprint
-import argparse
 
 # %% load parameters from toml file
-parser = argparse.ArgumentParser()
-parser.add_argument("configFilePath")
-tmp = parser.parse_args()
-
-with open(tmp.configFilePath,'rb') as f:
+with open('graphNN_GraphSAGE.toml','rb') as f:
     ARGS = tomllib.load(f)
 
 
@@ -49,32 +44,23 @@ class GCN(torch.nn.Module):
     # TODO tomls all parameters of the 
     def __init__(self, hDim:int):
         super().__init__()
-        # layer 1
         self.conv1 = SAGEConv(dataset.num_node_features, hDim)
-        if ARGS['conv1']['dropout']:
-            self.drop1= F.dropout
-        if ARGS['conv1']['activation']:
+        if ARGS['conv1_activation']:
             self.activ1= F.relu
-        # layer 2
-        if ARGS['conv2']['switch']:
+        if ARGS['conv2_switch']:
             self.conv2 = SAGEConv(hDim, dataset.num_classes)
-        if ARGS['conv2']['dropout']:
-            self.drop2= F.dropout
-        if ARGS['conv2']['activation']:
+        if ARGS['conv2_activation']:
             self.activ2= F.relu
 
     def forward(self, data):
         x, edge_index, batch = data.x, data.edge_index, data.batch
         # 1. node embeddings
         x = self.conv1(x, edge_index)
-        if hasattr(self, 'drop1'):
-            x = self.drop1(x, p=ARGS['conv1']['dropout'], training=self.training)
         if hasattr(self, 'activ1'):
             x = self.activ1(x)
+        # TODO consider dropout
         if hasattr(self, 'conv2'):
             x = self.conv2(x, edge_index)
-        if hasattr(self, 'drop2'):
-            x = self.drop2(x, p=ARGS['conv2']['dropout'], training=self.training)
         if hasattr(self, 'activ2'):
             x = self.activ2(x)
         # 2. Readout layer (graph classification)
@@ -90,21 +76,19 @@ def trainLoss(model, optimizer, criterion, loader):
     """
     model.train()
     # Iterate in batches over the training dataset.
-    lossMean = 0
     for data in loader:
         optimizer.zero_grad() # Clear gradients.
         # Perform a single forward pass.
         out = model(data) 
         # Compute the loss.
         loss = criterion(out, data.y)
-        lossMean += loss/len(loader)
         # Derive gradients.
         loss.backward()
         # Update parameters based on gradients.
         optimizer.step() 
     
     # FIXME loss from multiple batches ? mean ?
-    return lossMean
+    return loss
 
 
 def testAccuracy(model,loader):
@@ -160,13 +144,11 @@ def learningLoop(randomSeed:int)-> torch.tensor:
     accWindow = torch.zeros([ARGS['ma_window']])
     for e in epochs:
         loss = trainLoss(model, optimizer, criterion, trainLoader)
-        accT = testAccuracy(model, trainLoader)
-        accV = testAccuracy(model, testLoader)
-        desc = f"{e: 4d}| L:{loss:4.3f}| T:{accT:4.3f}| V:{accV:4.3f}"
-        epochs.set_description(desc)
+        acc = testAccuracy(model, testLoader)
+        epochs.set_description(f"{e}\t L:{loss:.4f}\t A:{acc:.4f}")
         # early stopping with moving average update threshold
         accWindow = accWindow.roll(-1)
-        accWindow[-1]=accV
+        accWindow[-1]=acc
         if (accWindow.max()-accWindow.min())< ARGS['ma_threshold']:
             break
     
@@ -186,13 +168,12 @@ para = Parallel(n_jobs=2, return_as='generator')
 
 outGen = para(delayed(learningLoop)(s) for s in seeds)
 
-outProbs = list(tqdm(outGen, ncols=100, total=len(seeds)))
+outPreds = list(tqdm(outGen, ncols=100, total=len(seeds)))
 
 
 # %% export clasification performance (to binaty .pt file)
 if ARGS['save']:
-    # the information score requires predicted probabilities!
-    result = torch.stack(outProbs)
+    result = torch.stack(outPreds).argmax(dim=2)
     outVersion= dt.datetime.now().strftime("%y%m%d-%H%M%S")
     outPath= osp.join(ARGS['root_folder'], ARGS['out_folder'], outVersion)
     torch.save(result, outPath+'.pt')

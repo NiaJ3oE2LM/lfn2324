@@ -26,9 +26,14 @@ from tqdm import tqdm
 # configuration and logging
 import tomllib
 from pprint import pprint
+import argparse
 
 # %% load parameters from toml file
-with open('graphNN_SGC.toml','rb') as f:
+parser = argparse.ArgumentParser()
+parser.add_argument("configFilePath")
+tmp = parser.parse_args()
+
+with open(tmp.configFilePath,'rb') as f:
     ARGS = tomllib.load(f)
 
 
@@ -44,22 +49,29 @@ dataset.load(osp.join(ARGS['root_folder'],
 class GCN(torch.nn.Module):
     def __init__(self, hDim:int, conv1_k:int, conv2_k:int):
         super().__init__()
-        # TODO add parameter layer depth
+        # layer 1
         self.conv1 = SGConv(in_channels=dataset.num_node_features, 
                             out_channels= hDim, 
                             K= ARGS['conv1']['depth'],
                             add_self_loops= ARGS['conv1']['selfloops'], 
                             bias= ARGS['conv1']['hasbias'],
+                            aggr= ARGS['conv1']['aggr'],
                             )
+        if ARGS['conv1']['dropout']:
+            self.drop1= F.dropout
         if ARGS['conv1']['activation']:
             self.activ1= F.relu
+        # layer 2
         if ARGS['conv2']['switch']:  
-            self.conv2 = SGConv(in_channels=dataset.num_node_features, 
-                                out_channels= hDim, 
+            self.conv2 = SGConv(in_channels= hDim, 
+                                out_channels= 2, 
                                 K= ARGS['conv2']['depth'],
                                 add_self_loops= ARGS['conv2']['selfloops'], 
                                 bias= ARGS['conv2']['hasbias'],
+                                aggr= ARGS['conv2']['aggr'],
                                 )
+        if ARGS['conv2']['dropout']:
+            self.drop2= F.dropout
         if ARGS['conv2']['activation']:
             self.activ2= F.relu
 
@@ -67,11 +79,14 @@ class GCN(torch.nn.Module):
         x, edge_index, batch = data.x, data.edge_index, data.batch
         # 1. node embeddings
         x = self.conv1(x, edge_index)
+        if hasattr(self, 'drop1'):
+            x = self.drop1(x, p=ARGS['conv1']['dropout'], training=self.training)
         if hasattr(self, 'activ1'):
             x = self.activ1(x)
-        # TODO consider dropout
         if hasattr(self, 'conv2'):
             x = self.conv2(x, edge_index)
+        if hasattr(self, 'drop2'):
+            x = self.drop2(x, p=ARGS['conv2']['dropout'], training=self.training)
         if hasattr(self, 'activ2'):
             x = self.activ2(x)
         # 2. Readout layer (graph classification)
@@ -86,19 +101,20 @@ def trainLoss(model, optimizer, criterion, loader):
     """
     model.train()
     # Iterate in batches over the training dataset.
+    lossMean= 0
     for data in loader:
         optimizer.zero_grad() # Clear gradients.
         # Perform a single forward pass.
         out = model(data) 
         # Compute the loss.
         loss = criterion(out, data.y)
+        lossMean += loss/len(loader)
         # Derive gradients.
         loss.backward()
         # Update parameters based on gradients.
         optimizer.step() 
     
-    # FIXME loss from multiple batches ? mean ?
-    return loss
+    return lossMean
 
 
 def testAccuracy(model,loader):
@@ -137,9 +153,21 @@ def learningLoop(randomSeed:int)-> torch.tensor:
                 conv2_k= ARGS['conv2']['depth'],
                 ).to(ARGS['device'])
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(),
-                                 lr=ARGS['learning_rate'],
-                                 weight_decay= ARGS['weight_decay'],
+    match ARGS['opt']['name'].lower():
+        case 'adam':
+            # https://pytorch.org/docs/stable/generated/torch.optim.Adam.html
+            optimizer = torch.optim.Adam(model.parameters(),
+                                 lr=ARGS['opt']['learning_rate'],
+                                 weight_decay= ARGS['opt']['weight_decay'],
+                                 )
+        case 'sgd':
+            # https://pytorch.org/docs/stable/generated/torch.optim.SGD.html
+            optimizer = torch.optim.SGD(model.parameters(),
+                                 lr= ARGS['opt']['learning_rate'],
+                                 nesterov= ARGS['opt']['nesterov'],
+                                 momentum= ARGS['opt']['momentum'],
+                                 dampening= ARGS['opt']['dampening'],
+                                 weight_decay= ARGS['opt']['weight_decay'],
                                  )
     # shuffle the hole dataset
     randGen = torch.manual_seed(randomSeed)
@@ -158,11 +186,13 @@ def learningLoop(randomSeed:int)-> torch.tensor:
     accWindow = torch.zeros([ARGS['ma_window']])
     for e in epochs:
         loss = trainLoss(model, optimizer, criterion, trainLoader)
-        acc = testAccuracy(model, testLoader)
-        epochs.set_description(f"{e}\t L {loss:.4f}\t A{acc:.4f}")
+        accT = testAccuracy(model, trainLoader)
+        accV = testAccuracy(model, testLoader)
+        desc = f"{e: 4d}| L:{loss:4.3f}| T:{accT:4.3f}| V:{accV:4.3f}"
+        epochs.set_description(desc)
         # early stopping with moving average update threshold
         accWindow = accWindow.roll(-1)
-        accWindow[-1]=acc
+        accWindow[-1]=accV
         if (accWindow.max()-accWindow.min()) < ARGS['ma_threshold']:
             break
     
@@ -181,12 +211,13 @@ para = Parallel(n_jobs=ARGS['num_jobs'], return_as='generator')
 
 outGen = para(delayed(learningLoop)(s) for s in seeds)
 
-outPreds = list(outGen)
+outProbs = list(outGen)
 
 
 # %% export clasification performance (to binaty .pt file)
 if ARGS['save'] :
-    result = torch.stack(outPreds).argmax(dim=2)
+    # the information score requires predicted probabilities!
+    result = torch.stack(outProbs)
     outVersion= dt.datetime.now().strftime("%y%m%d-%H%M%S")
     outPath= osp.join(ARGS['root_folder'],ARGS['out_folder'], outVersion)
     torch.save(result, outPath+'.pt')

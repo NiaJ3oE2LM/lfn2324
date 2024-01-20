@@ -1,7 +1,7 @@
 # figure
 out_folder= 'img'
-out_name= 'tuningSGC'
-title= '2 layers (selfloops, activ, bias) ep.300'
+out_name= 'informationScore'
+title= 'debug information score (eps=1e-1)'
 
 # true labels (same root folder)
 true_data = '20240115-105053_output'
@@ -10,6 +10,10 @@ true_data = '20240115-105053_output'
 root_folder= 'computed'
 [model_defs]
 'rand. class.'= 'randomClassifier/240120-204802'
+'always correct'= 'randomClassifier/correct'
+'always incorrect'= 'randomClassifier/incorrect'
+'always useful'= 'randomClassifier/useful'
+'always misleading'= 'randomClassifier/misleading'
 #'trad. ML'= 'traditionalML_20240115-181619'#
 #'k:1 hdim. 5'= 'SimpleGC/240119-111229'
 #'k:2/0 hdim. 5'= 'SimpleGC/240119-111240'#
@@ -23,5 +27,5 @@ root_folder= 'computed'
 #'k:1/1 hdim. 12 '= 'SimpleGC/240120-112925'
 #'k:1/1 hdim. 14 '= 'SimpleGC/240120-110719'
 #'k:1/1 hdim. 12 '= 'SimpleGC/240120-153025'#
-'fix info score'= 'SimpleGC/240120-194323'
+#'fix info score'= 'SimpleGC/240120-194323'
 

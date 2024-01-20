@@ -29,7 +29,9 @@ from tqdm import tqdm
 
 # post processing (graphics)
 from torch import cat
-import  matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 import datetime as dt
 
 # configuration and logging
@@ -46,12 +48,12 @@ with open('statisticalSignificance.toml','rb') as f:
 # %% load all available random collection together (list)
 rootFolder=ARGS['root_folder']
 allCollections=listdir(rootFolder)
-# TODO argument for share of random collections
+# use only the secified share from all available random collections
 availableCollections = allCollections[:int(len(allCollections)*ARGS['consider_share'])]
 print(f"using first {len(availableCollections)} collections of {len(allCollections)}")
 # init lit of InMemoryDataset with (all the same) transforms
 composition = Compose([
-    selectNodeFeats(tensor([ 0,])), # FIXME implment one-hot decoder
+    selectNodeFeats(tensor([ 0,])), # one-hot decoder
     nodeDegree(),closenessCentrality(),betweennessCentrality(),
     nodeClustering(),
     selectNodeFeats(tensor([1, 2, 3, 4])), # removes init graph label
@@ -71,38 +73,46 @@ dataset = TUDataset(root='tmp', name='DHFR', transform= composition)
 
 # %% function definition
 
-def computeZScores(idx:int, trueGraph:Data)-> Data:
+def computeZScores(idx:int, trueGraph:Data)-> tensor:
     """
     computes z-scores for trueGraph in position idx of original dataset
     uses random collections loaded at global level on the specified folder    
     """
     assert idx < len(randCollections[0])
-    tmp = [rc[idx].x for rc in randCollections] # rc: random collection
-    nodeFeats = stack(tmp) # num_coll*(num_nodes*num_feats)
+    # num_coll*(num_nodes*num_feats) rc: random collection
+    nodeFeats = stack([rc[idx].x for rc in randCollections], dim=0) 
     # TODO consider also graph level features
     # TODO definition of z-score on lecture notes p. XX
-    return (trueGraph.x - nodeFeats.mean(dim=0))/nodeFeats.std(dim=0)
+    ans = (trueGraph.x - nodeFeats.mean(dim=0))/nodeFeats.std(dim=0)
+    # set nan values to 0 (non contributing)
+    ans[where(ans.isnan())] = 0
+    return ans
 
 
-def computePValues(idx:int, trueGraph:Data)-> Data:
+def computePValues(idx:int, trueGraph:Data)-> (tensor,tensor):
     """
     computes p-values for trueGraph in position idx of original dataset
     by counting the occurrencies and estimating the probability
     uses random collections loaded at global level on the specified folder    
     """
     assert idx < len(randCollections[0])
-    tmp = [rc[idx].x for rc in randCollections] # rc: random collection
-    nodeFeats = stack(tmp) # num_coll*(num_nodes*num_feats)
-    # TODO also negative probability
-    ans = where(trueGraph.x > nodeFeats)
-    count = zeros(nodeFeats.shape)
-    count[ans]= 1    
-    # FIXME definition of z-score on lecture notes p. XX
-    return count.sum(dim=0) / nodeFeats.shape[0]
+    # num_coll*(num_nodes*num_feats) rc: random collection
+    nodeFeats = stack([rc[idx].x for rc in randCollections], dim=0) 
+    # probability: true > random 
+    ans = where(trueGraph.x >= nodeFeats)
+    countPos = zeros(nodeFeats.shape)
+    countPos[ans]= 1
+    # probability: true < random 
+    ans = where(trueGraph.x < nodeFeats)
+    countNeg = zeros(nodeFeats.shape)
+    countNeg[ans]= 1  
+    # FIXME definition of p-value on lecture notes p. XX
+    prPos= countPos.sum(dim=0) / nodeFeats.shape[0]
+    prNeg= countNeg.sum(dim=0) / nodeFeats.shape[0]
+    return stack([prPos, prNeg], dim=0)
 
 
 # %% run jobs in parallel and store result
-# TODO argparse
 if __name__ == '__main__':
     para = Parallel(n_jobs= ARGS['num_jobs'],
                     batch_size= ARGS['batch_size'],
@@ -114,29 +124,63 @@ if __name__ == '__main__':
     
 
 # %% plot results: decide which features are significant
+# z-Scores: format positive and negative probs for seaborn
 catZScores= cat(zScores, dim=0)
-catPValues= cat(pValues, dim=0)
-# FIXME NaN values
+n, d = catZScores.shape
+flatZScores= catZScores.flatten()
+flatZLabels= (tensor([range(d)])+1).repeat([n,1]).flatten()
+assert flatZScores.shape == flatZLabels.shape
+
+# p-Values: format positive and negative probs for seaborn
+catPValues= cat(pValues, dim=1)
+
+_, n, d = catPValues.shape
+flatPosPValues= catPValues[0].flatten()
+flatPosLabels= (tensor([range(d)])+1).repeat([n,1]).flatten()
+flatPosHues= zeros(flatPosPValues.shape)
+assert flatPosPValues.shape == flatPosLabels.shape
+flatNegPValues= catPValues[1].flatten()
+flatNegLabels= (1+tensor([range(d)])).repeat([n,1]).flatten()
+flatNegHues= zeros(flatNegPValues.shape)+1
+assert flatNegPValues.shape == flatNegLabels.shape
+
+# FIXME NaN values, drop them ?
 outFolder='img'
 # TODO axes subplot with title and slanted labels
 fig, axs= plt.subplots(1,2)
 fig.suptitle(f"{ARGS['title']} ({len(availableCollections)} samples)")
 
+# https://seaborn.pydata.org/generated/seaborn.violinplot.html
+violinSetup = {
+    'gridsize': len(availableCollections)//2,
+    'density_norm':'count',
+    'split': True,
+    'dodge': True,
+    'gap': 0., 
+    'inner':"quart",
+    }
 # generate violin plot
 axs[0].set_title("z-scores")
-axs[0].violinplot(catZScores.numpy(), showmeans= True)
+sns.violinplot(y= flatZScores.numpy(),
+               x= flatZLabels.numpy(),
+               density_norm='count',
+               ax= axs[0])
 axs[1].set_title("p-values (neg)")
-axs[1].violinplot(catPValues.numpy(), showmeans= True)
+sns.violinplot(y= cat([flatPosPValues, flatNegPValues]).numpy(),
+               x= cat([flatPosLabels, flatNegLabels]).numpy(),
+               hue= cat([flatPosHues, flatNegHues]).numpy(),
+               ax= axs[1],** violinSetup)
+
 
 # format axes
 for ax in axs:
-    ax.set_xticks([i+1 for i in range(len(featLabels))],
+    ax.set_xticks([i for i in range(len(featLabels))],
                   labels= featLabels, rotation=60)
     # TODO add file names under the label with smaller size
     #ax.set_ylim(0,1)
 
 fig.tight_layout()
-# save figure and log
+# %% save figure and log
 outVersion= dt.datetime.now().strftime("%y%m%d-%H%M%S")
 outPath= osp.join(ARGS['out_folder'],f"{ARGS['out_name']}_{outVersion}")
 plt.savefig(outPath+'.png')

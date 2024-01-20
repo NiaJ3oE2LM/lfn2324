@@ -1,0 +1,25 @@
+{'batch_size': 10,
+ 'conv1': {'activation': True, 'depth': 1, 'hasbias': True, 'selfloops': True},
+ 'conv2': {'activation': True,
+           'depth': 1,
+           'hasbias': True,
+           'selfloops': True,
+           'switch': True},
+ 'data_name': '20240115-105053',
+ 'device': 'cuda',
+ 'hidden_dim': 4,
+ 'learning_rate': 0.003,
+ 'ma_threshold': 0.001,
+ 'ma_window': 100,
+ 'max_epochs': 300,
+ 'num_jobs': 1,
+ 'out_folder': 'SimpleGC',
+ 'root_folder': 'computed',
+ 'save': True,
+ 'seed_name': 'seedSequence_p10',
+ 'test_share': 0.3,
+ 'weight_decay': 1e-08}
+GCN(
+  (conv1): SGConv(7, 4, K=1)
+  (conv2): SGConv(4, 2, K=1)
+)

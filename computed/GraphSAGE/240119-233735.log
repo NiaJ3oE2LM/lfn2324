@@ -1,0 +1,21 @@
+{'batch_size': 10,
+ 'conv1_activation': True,
+ 'conv2_activation': False,
+ 'conv2_switch': False,
+ 'device': 'cuda',
+ 'hidden_dim': 5,
+ 'input_name': '20240115-105053',
+ 'learning_rate': 0.01,
+ 'ma_threshold': 0.001,
+ 'ma_window': 100,
+ 'max_epochs': 300,
+ 'num_jobs': 1,
+ 'out_folder': 'GraphSAGE',
+ 'root_folder': 'computed',
+ 'save': True,
+ 'seed_name': 'seedSequence_p10',
+ 'test_share': 0.3,
+ 'weight_decay': 0.0005}
+GCN(
+  (conv1): SAGEConv(7, 5, aggr=mean)
+)

@@ -1,0 +1,5 @@
+root_folder= 'computed'
+seed_name= 'seedSequence_p10'
+true_name= '20240115-105053_output'
+out_folder= 'randomClassifier'
+eps= 1e-1

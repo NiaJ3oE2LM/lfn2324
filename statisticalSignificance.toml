@@ -5,7 +5,7 @@ title= 'remember to fix Nan values'
 
 # random collections processing
 root_folder= 'random'
-consider_share= 0.2
+consider_share= 1
 feats_name= ['node degree','closeness','betweenness','node cluster']
 
 # job handling

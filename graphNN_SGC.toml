@@ -11,27 +11,37 @@ seed_name= 'seedSequence_p10'
 
 # model 
 batch_size= 10
-hidden_dim= 6
+hidden_dim= 12
 # layer 1
-conv1.depth= 2
+conv1.aggr= 'mean' # sum mean(d) min max mul
+conv1.depth= 1
+conv1.dropout= 0.2 # 0 deactivates
 conv1.activation= true
 conv1.selfloops= true
 conv1.hasbias= true
 # layer 2
-conv2.switch= false
+conv2.switch= true
+conv2.aggr= 'max' # sum mean(d) min max mul
 conv2.depth= 1
+conv2.dropout= 0.1 # 0 deactivates
 conv2.activation= false
 conv2.selfloops= false
-conv2.hasbias= false
+conv2.hasbias= true
 # TODO global mean pool aggregator
 
-# optimizer
-learning_rate= 4e-3
-weight_decay= 1e-8
+# optimizer Adam or SGD 
+opt.name= 'sgd' # case insensitive
+#opt.learning_rate= 3e-3 # Adam
+opt.learning_rate= 1e-1 # SGD
+opt.weight_decay= 1e-8 # Adam, SGD
+opt.nesterov= true # SGD
+opt.momentum= 0.1 # SGD
+opt.dampening= 0 # SGD
 
-
-# trainig
+# training
 test_share= 0.3
 max_epochs= 300
-ma_window= 100
-ma_threshold= 1e-3
+# early stopping
+ma_window= 50
+ma_threshold= 5e-3
+

@@ -1,7 +1,7 @@
 # figure
 out_folder= 'img'
 out_name= 'tuningGraphSAGE'
-title= ''
+title= '2 layer ep.300'
 
 # true labels (same root folder)
 true_data = '20240115-105053_output'
@@ -10,8 +10,13 @@ true_data = '20240115-105053_output'
 root_folder= 'computed'
 [model_defs]
 'rand. class.'= 'randomClassifier'
-#'trad. ML'= 'traditionalML_20240115-181619.pt'
-'hdim 2 ep.10'= 'GraphSAGE/'
-'GraphSAGE3'= 'GraphSAGE/'
-'hdim 2 ep.200'= 'GraphSAGE/'
+'trad. ML'= 'traditionalML_20240115-181619'
+#'1/0 3'= 'GraphSAGE/240119-231816'
+'1/0 h 5'= 'GraphSAGE/240119-233735'
+#'1/0 h 7'= 'GraphSAGE/240119-235650'
+#'1/0 h 10'= 'GraphSAGE/240120-001558'
+'1/1 h 3'= 'GraphSAGE/240120-003624'
+'1/1 h 5'= 'GraphSAGE/240120-005647'
+#'1/1 h 7'= 'GraphSAGE/240120-011621'
+#'1/1 h 10'= 'GraphSAGE/240120-013648'
 
