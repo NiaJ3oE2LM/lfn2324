@@ -1,0 +1,9 @@
+{'10 / adam': 'traditionalMLP/240122-111938',
+ '10 / sgd': 'traditionalMLP/240122-111942',
+ '100 / adam': 'traditionalMLP/240122-111930',
+ '100 / sgd': 'traditionalMLP/240122-111934',
+ '1000 /* adam': 'traditionalMLP/240122-111849',
+ '1000 /* sgd': 'traditionalMLP/240122-111908',
+ '5000 /* adam': 'traditionalMLP/240122-112023',
+ '5000 /* sgd': 'traditionalMLP/240122-112102',
+ 'rand. class.': 'randomClassifier/240120-204802'}

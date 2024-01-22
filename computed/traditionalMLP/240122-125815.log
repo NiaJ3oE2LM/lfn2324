@@ -1,0 +1,21 @@
+{'data_name': '20240115-105053',
+ 'device': 'cuda',
+ 'lay1': {'activation': True, 'dropout': 0.2},
+ 'lay2': {'activation': True, 'dropout': 0.2, 'hidden_dim': 5000},
+ 'ma_threshold': 0.002,
+ 'ma_window': 100,
+ 'max_epochs': 1000,
+ 'num_jobs': 1,
+ 'opt': {'learning_rate': 0.001, 'name': 'adam', 'weight_decay': 1e-08},
+ 'out_folder': 'traditionalMLP',
+ 'root_folder': 'computed',
+ 'save': True,
+ 'seed_name': 'seedSequence_p10',
+ 'test_share': 0.3}
+MLP(
+  (lay1): Linear(in_features=14, out_features=5000, bias=True)
+  (activ1): ReLU()
+  (lay2): Linear(in_features=5000, out_features=2, bias=True)
+  (activ2): ReLU()
+  (softmax): Softmax(dim=1)
+)

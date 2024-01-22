@@ -1,7 +1,7 @@
 # figure
 out_folder= 'img'
 out_name= 'tuningGraphSAGE'
-title= 'GraphSAGE tuning: hDim / aggr.'
+title= 'GraphSAGE tuning: hDim / aggr. *ep.500'
 dpi= 300
 
 # true labels (same root folder)
@@ -15,7 +15,14 @@ root_folder= 'computed'
 '0 - mean'= 'GraphSAGE/240121-155350'
 #'0 - min'= 'GraphSAGE/240121-162016'
 #'0 / mul'= 'GraphSAGE/240121-165119'
-'100 / mean'= 'GraphSAGE/240121-183453'
+#'100 / mean'= 'GraphSAGE/240121-183453'
 '300 / mean'= 'GraphSAGE/240121-190428'
-'500 / mean'= 'GraphSAGE/240121-193530'
-'1000 / mean'= 'GraphSAGE/240121-205157'
+'300 /* mean'= 'GraphSAGE/240121-231848'
+'300 /* max'= 'GraphSAGE/240121-222159'
+'400 /* mean'= 'GraphSAGE/240122-011329'
+'400 /* max'= 'GraphSAGE/240122-001632'
+#'500 / mean'= 'GraphSAGE/240121-193530'
+'500 /* mean'= 'GraphSAGE/240122-030854'
+'500 /* max'= 'GraphSAGE/240122-021138'
+#'1000 / mean'= 'GraphSAGE/240121-205157'
+

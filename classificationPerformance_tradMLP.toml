@@ -1,0 +1,28 @@
+# figure
+out_folder= 'img'
+out_name= 'tradMLP'
+title= 'trad. MLP hDim / opt. *drop.20%'
+dpi= 300
+
+# true labels (same root folder)
+true_data = '20240115-105053_output'
+
+# model label= predicitonFiles in root_folder (without .pt)
+root_folder= 'computed'
+[model_defs]
+'rand. class.'= 'randomClassifier/240120-204802'
+#'10 / adam'= 'traditionalMLP/240122-111938'
+#'10 / sgd'= 'traditionalMLP/240122-111942'
+'100 / adam'= 'traditionalMLP/240122-111930'
+'100 / sgd'= 'traditionalMLP/240122-111934'
+'1000 /* adam'= 'traditionalMLP/240122-111849'
+#'1000 /* sgd'= 'traditionalMLP/240122-111908'
+'2000 /* adam'= 'traditionalMLP/240122-125643'
+'3000 /* adam'= 'traditionalMLP/240122-125706'
+'4000 /* adam'= 'traditionalMLP/240122-125741'
+'5000 /* adam'= 'traditionalMLP/240122-112023'
+#'5000 /* sgd'= 'traditionalMLP/240122-112102'
+'6000 /* adam'= 'traditionalMLP/240122-125842'
+'7000 /* adam'= 'traditionalMLP/240122-125857'
+'8000 /* adam'= 'traditionalMLP/240122-125910'
+

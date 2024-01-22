@@ -1,0 +1,36 @@
+# job handling
+save= false
+out_folder= 'traditionalMLP'
+device= 'cuda'
+num_jobs= 1 
+
+# dataset
+root_folder= 'computed'
+data_name= '20240115-105053'
+seed_name= 'seedSequence_p10'
+
+# model 
+# layer 1
+lay1.dropout= 0.2 # 0 deactivated
+lay1.activation= true
+# layer 2
+lay2.hidden_dim= 5000
+lay2.dropout= 0.2 # 0 deactivated
+lay2.activation= true
+
+# optimizer Adam or SGD 
+opt.name= 'sgd' # case insensitive
+#opt.learning_rate= 1e-3 # Adam
+opt.learning_rate= 3e-2 # SGD
+opt.weight_decay= 1e-8 # Adam, SGD
+opt.nesterov= true # SGD
+opt.momentum= 0.1 # SGD
+opt.dampening= 0 # SGD
+
+# training
+test_share= 0.3
+max_epochs= 1000
+# early stopping
+ma_window= 100
+ma_threshold= 2e-3
+

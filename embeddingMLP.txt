@@ -1,0 +1,2 @@
+config/embeddingMLP/5-20_0adam.toml
+config/embeddingMLP/5-20_0sgd.toml

@@ -1,0 +1,7 @@
+{'10-20 / 0.adam': 'embeddingMLP/240122-150155',
+ '10-20 / 0.sgd': 'embeddingMLP/240122-151034',
+ '16-20 / 0.adam': 'embeddingMLP/240122-151913',
+ '16-20 / 0.sgd': 'embeddingMLP/240122-152742',
+ '5-20 / 0.adam': 'embeddingMLP/240122-161735',
+ '5-20 / 0.sgd': 'embeddingMLP/240122-162601',
+ 'rand. class.': 'randomClassifier/240120-204802'}

@@ -1,0 +1,8 @@
+config/traditionalMLP/1000adam.toml
+config/traditionalMLP/2000adam.toml
+config/traditionalMLP/3000adam.toml
+config/traditionalMLP/4000adam.toml
+config/traditionalMLP/5000adam.toml
+config/traditionalMLP/6000adam.toml
+config/traditionalMLP/7000adam.toml
+config/traditionalMLP/8000adam.toml

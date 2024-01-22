@@ -1,7 +1,7 @@
 # figure
 out_folder= 'img'
 out_name= 'tuningSGC'
-title= 'SGC 1 layer: aggr. (depth)'
+title= 'SGC hDim / aggr : K'
 dpi= 300
 
 # true labels (same root folder)
@@ -12,16 +12,23 @@ root_folder= 'computed'
 [model_defs]
 'rand. class.'= 'randomClassifier/240120-204802'
 #'trad. ML'= 'traditionalML_20240115-181619'#
-'max (1)'= 'SimpleGC/240121-150446'
+'0 / max : 1'= 'SimpleGC/240121-150446'
 #'max (2)'= 'SimpleGC/240121-152246'
 #'max (3)'= 'SimpleGC/240121-153403'
-'mean (1)'= 'SimpleGC/240121-162647'
+'0 / mean : 1'= 'SimpleGC/240121-162647'
 #'mean (2)'= 'SimpleGC/240121-163840'
 #'mean (3)'= 'SimpleGC/240121-165033'
-'min (1)'= 'SimpleGC/240121-170655'
-#'min (2)'= 'SimpleGC/240121-171308'
-#'min (3)'= 'SimpleGC/240121-171632'
-#'mul (1)'= 'SimpleGC/240121-173405'
-#'mul (2)'= 'SimpleGC/240121-174619'
-#'mul (3)'= 'SimpleGC/240121-181706'
+'0 / min : 1'= 'SimpleGC/240121-170655'
+'10 / max : 1'= 'SimpleGC/240122-011549'
+#'10 / max : 2'= 'SimpleGC/240122-020911'
+#'10 / mean : 1'= 'SimpleGC/240122-025848'
+#'10 / mean : 2'= 'SimpleGC/240122-031357'
+#'100 / max : 1'= 'SimpleGC/240121-220619'
+#'100 / max : 2'= 'SimpleGC/240121-224226'
+'100 / mean : 1'= 'SimpleGC/240121-234629'
+'100 / mean : 2'= 'SimpleGC/240122-001253'
+#'300 / max : 1'= 'SimpleGC/240122-031357'
+#'300 / max : 2'= 'SimpleGC/240122-032410'
+'300 / mean : 1'= 'SimpleGC/240122-034842'
+'300 / mean : 2'= 'SimpleGC/240122-035705'
 

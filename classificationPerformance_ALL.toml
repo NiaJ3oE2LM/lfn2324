@@ -1,0 +1,18 @@
+# figure
+out_folder= 'img'
+out_name= 'compareAll'
+title= 'DHFR learning problem'
+dpi= 300
+
+# true labels (same root folder)
+true_data = '20240115-105053_output'
+
+# model label= predicitonFiles in root_folder (without .pt)
+root_folder= 'computed'
+[model_defs]
+'rand. class.'= 'randomClassifier/240120-204802'
+'trad. MLP'= 'traditionalMLP/240122-125741'
+'embed. MLP.'= 'embeddingMLP/240122-151913'#
+'Simpe GC.'= 'SimpleGC/240121-234629'
+'GraphSAGE.'= 'GraphSAGE/240122-001632'
+
