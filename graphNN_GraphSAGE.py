@@ -15,7 +15,7 @@ from torch_geometric.nn.conv import SAGEConv
 import torch.nn.functional as F
 # readout layer for graph class
 from torch_geometric.nn import global_mean_pool
-# from torch_geometric.nn.aggr import MeanAggregation
+# from torch_geometric.nn.aggr import SoftmaxAggregation
 
 from joblib import Parallel, delayed 
 import datetime as dt
@@ -32,6 +32,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("configFilePath")
 tmp = parser.parse_args()
 
+print(tmp.configFilePath)
+
 with open(tmp.configFilePath,'rb') as f:
     ARGS = tomllib.load(f)
 
@@ -46,22 +48,29 @@ dataset.load(osp.join(ARGS['root_folder'], ARGS['input_name'],
 # %% define ML model 
 
 class GCN(torch.nn.Module):
+    def __init__(self):
     # TODO tomls all parameters of the 
-    def __init__(self, hDim:int):
         super().__init__()
+        hDim = ARGS['conv2']['hidden_dim']
         # layer 1
-        self.conv1 = SAGEConv(dataset.num_node_features, hDim)
+        self.conv1 = SAGEConv(in_channels= dataset.num_node_features,
+                              out_channels= hDim if hDim else dataset.num_classes,
+                              aggr= ARGS['conv1']['aggr'],
+                              )
         if ARGS['conv1']['dropout']:
             self.drop1= F.dropout
         if ARGS['conv1']['activation']:
             self.activ1= F.relu
         # layer 2
-        if ARGS['conv2']['switch']:
-            self.conv2 = SAGEConv(hDim, dataset.num_classes)
-        if ARGS['conv2']['dropout']:
-            self.drop2= F.dropout
-        if ARGS['conv2']['activation']:
-            self.activ2= F.relu
+        if hDim:
+            self.conv2 = SAGEConv(in_channels= hDim,
+                                  out_channels= dataset.num_classes,
+                                  aggr= ARGS['conv1']['aggr'],
+                                  )
+            if ARGS['conv2']['dropout']:
+                self.drop2= F.dropout
+            if ARGS['conv2']['activation']:
+                self.activ2= F.relu
 
     def forward(self, data):
         x, edge_index, batch = data.x, data.edge_index, data.batch
@@ -82,7 +91,6 @@ class GCN(torch.nn.Module):
         x = global_mean_pool(x, batch)
         # 3. final classifier
         return F.log_softmax(x, dim=1)
-
 
 def trainLoss(model, optimizer, criterion, loader):
     """
@@ -138,11 +146,24 @@ def modelValidate(model, dataset)-> torch.tensor:
 
 def learningLoop(randomSeed:int)-> torch.tensor:
     # define object
-    model = GCN(ARGS['hidden_dim']).to(ARGS['device'])
+    model = GCN().to(ARGS['device'])
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(),
-                                 lr= ARGS['learning_rate'],
-                                 weight_decay= ARGS['weight_decay'])
+    match ARGS['opt']['name'].lower():
+        case 'adam':
+            # https://pytorch.org/docs/stable/generated/torch.optim.Adam.html
+            optimizer = torch.optim.Adam(model.parameters(),
+                                 lr=ARGS['opt']['learning_rate'],
+                                 weight_decay= ARGS['opt']['weight_decay'],
+                                 )
+        case 'sgd':
+            # https://pytorch.org/docs/stable/generated/torch.optim.SGD.html
+            optimizer = torch.optim.SGD(model.parameters(),
+                                 lr= ARGS['opt']['learning_rate'],
+                                 nesterov= ARGS['opt']['nesterov'],
+                                 momentum= ARGS['opt']['momentum'],
+                                 dampening= ARGS['opt']['dampening'],
+                                 weight_decay= ARGS['opt']['weight_decay'],
+                                 )
     # shuffle the hole dataset
     randGen = torch.manual_seed(int(randomSeed))
     perm = torch.randperm(len(dataset), generator=randGen)
@@ -199,6 +220,6 @@ if ARGS['save']:
     # print training information
     with open(outPath+'.log','w') as f :
         pprint(ARGS, stream=f)
-        pprint(GCN(ARGS['hidden_dim']), stream=f)
+        pprint(GCN(), stream=f)
     
     

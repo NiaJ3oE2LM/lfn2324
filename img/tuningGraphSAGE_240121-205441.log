@@ -1,0 +1,7 @@
+{'0 - mean': 'GraphSAGE/240121-155350',
+ '0 / max': 'GraphSAGE/240121-152330',
+ '100 / mean': 'GraphSAGE/240121-183453',
+ '1000 / mean': 'GraphSAGE/240121-205157',
+ '300 / mean': 'GraphSAGE/240121-190428',
+ '500 / mean': 'GraphSAGE/240121-193530',
+ 'rand. class.': 'randomClassifier/240120-204802'}

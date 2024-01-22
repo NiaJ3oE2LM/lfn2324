@@ -11,7 +11,7 @@ Considered Models
 5. GraphSAGE
 @author: hari
 """
-from torch import load, stack, tensor, where, zeros, inner, log2
+from torch import load, stack, tensor, where, zeros, inner, log2, any
 
 import datetime as dt
 import os.path as osp
@@ -76,9 +76,12 @@ def informationScore(predProbs:tensor, trueClasses:tensor) -> tensor:
     """
     assert predProbs.shape[1] == trueClasses.shape[1]
     assert predProbs.shape[2]==2 # classes {0,1}
+    # deal with negative values of log_softmax
+    if any(predProbs<0):
+        predProbs= predProbs.exp()
     # ensure probability normalization
     predProbs = predProbs / predProbs.sum(dim=2, keepdim= True).repeat([1,1,2])
-    assert predProbs[0,0].sum()==1
+    assert predProbs[0,0].sum().round()==1
     # r: random seeds, n: graphs in DHFR (756)
     r, ng, _ = predProbs.shape
     # prior distributions (relative frequencies)
@@ -129,6 +132,7 @@ axs[1].boxplot(scoresInfo.t().numpy())
 # format axes
 lbs = [l for l in modelDefs.keys()]
 for ax in axs:
+    ax.set_aspect('auto')
     ax.set_xticks([i+1 for i in range(len(lbs))],labels=lbs, rotation=90)
     # TODO add file names under the label with smaller size
     
@@ -137,7 +141,7 @@ fig.tight_layout()
 # save figure and log
 outVersion= dt.datetime.now().strftime("%y%m%d-%H%M%S")
 outPath= osp.join(ARGS['out_folder'],f"{ARGS['out_name']}_{outVersion}")
-plt.savefig(outPath+'.png')
+plt.savefig(outPath+'.png', dpi= ARGS['dpi'])
 with open(outPath+'.log','w') as f:
     pprint(modelDefs, stream=f)
 

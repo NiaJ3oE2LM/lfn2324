@@ -1,0 +1,27 @@
+{'batch_size': 10,
+ 'conv1': {'activation': True, 'aggr': 'mean', 'dropout': 0.2},
+ 'conv2': {'activation': False,
+           'aggr': 'mean',
+           'dropout': 0.2,
+           'hidden_dim': 300},
+ 'device': 'cuda',
+ 'input_name': '20240115-105053',
+ 'ma_threshold': 0.002,
+ 'ma_window': 50,
+ 'max_epochs': 300,
+ 'num_jobs': 1,
+ 'opt': {'dampening': 0,
+         'learning_rate': 0.1,
+         'momentum': 0.1,
+         'name': 'sgd',
+         'nesterov': False,
+         'weight_decay': 1e-08},
+ 'out_folder': 'GraphSAGE',
+ 'root_folder': 'computed',
+ 'save': True,
+ 'seed_name': 'seedSequence_p10',
+ 'test_share': 0.3}
+GCN(
+  (conv1): SAGEConv(7, 300, aggr=mean)
+  (conv2): SAGEConv(300, 2, aggr=mean)
+)

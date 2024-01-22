@@ -33,6 +33,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("configFilePath")
 tmp = parser.parse_args()
 
+print(tmp.configFilePath)
+
 with open(tmp.configFilePath,'rb') as f:
     ARGS = tomllib.load(f)
 
@@ -47,11 +49,12 @@ dataset.load(osp.join(ARGS['root_folder'],
 # %% define ML model 
 
 class GCN(torch.nn.Module):
-    def __init__(self, hDim:int, conv1_k:int, conv2_k:int):
+    def __init__(self):
         super().__init__()
+        hDim = ARGS['conv2']['hidden_dim']
         # layer 1
         self.conv1 = SGConv(in_channels=dataset.num_node_features, 
-                            out_channels= hDim, 
+                            out_channels= hDim if hDim else dataset.num_classes, 
                             K= ARGS['conv1']['depth'],
                             add_self_loops= ARGS['conv1']['selfloops'], 
                             bias= ARGS['conv1']['hasbias'],
@@ -62,18 +65,18 @@ class GCN(torch.nn.Module):
         if ARGS['conv1']['activation']:
             self.activ1= F.relu
         # layer 2
-        if ARGS['conv2']['switch']:  
+        if hDim:
             self.conv2 = SGConv(in_channels= hDim, 
-                                out_channels= 2, 
+                                out_channels= dataset.num_classes, 
                                 K= ARGS['conv2']['depth'],
                                 add_self_loops= ARGS['conv2']['selfloops'], 
                                 bias= ARGS['conv2']['hasbias'],
                                 aggr= ARGS['conv2']['aggr'],
                                 )
-        if ARGS['conv2']['dropout']:
-            self.drop2= F.dropout
-        if ARGS['conv2']['activation']:
-            self.activ2= F.relu
+            if ARGS['conv2']['dropout']:
+                self.drop2= F.dropout
+            if ARGS['conv2']['activation']:
+                self.activ2= F.relu
 
     def forward(self, data):
         x, edge_index, batch = data.x, data.edge_index, data.batch
@@ -148,10 +151,7 @@ def modelValidate(model, dataset)-> torch.tensor:
 
 def learningLoop(randomSeed:int)-> torch.tensor:
     # define object
-    model = GCN(hDim= ARGS['hidden_dim'],
-                conv1_k= ARGS['conv1']['depth'],
-                conv2_k= ARGS['conv2']['depth'],
-                ).to(ARGS['device'])
+    model = GCN().to(ARGS['device'])
     criterion = torch.nn.CrossEntropyLoss()
     match ARGS['opt']['name'].lower():
         case 'adam':
@@ -224,8 +224,5 @@ if ARGS['save'] :
     # print training information
     with open(outPath+'.log','w') as f :
         pprint(ARGS, stream=f)
-        pprint(GCN(hDim= ARGS['hidden_dim'],
-                    conv1_k= ARGS['conv1']['depth'],
-                    conv2_k= ARGS['conv2']['depth'],
-                    ), stream=f)
+        pprint(GCN(), stream=f)
 

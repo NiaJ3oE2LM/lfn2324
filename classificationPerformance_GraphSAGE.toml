@@ -1,7 +1,8 @@
 # figure
 out_folder= 'img'
 out_name= 'tuningGraphSAGE'
-title= '2 layer ep.300'
+title= 'GraphSAGE tuning: hDim / aggr.'
+dpi= 300
 
 # true labels (same root folder)
 true_data = '20240115-105053_output'
@@ -9,14 +10,12 @@ true_data = '20240115-105053_output'
 # model label= predicitonFiles in root_folder (without .pt)
 root_folder= 'computed'
 [model_defs]
-'rand. class.'= 'randomClassifier'
-'trad. ML'= 'traditionalML_20240115-181619'
-#'1/0 3'= 'GraphSAGE/240119-231816'
-'1/0 h 5'= 'GraphSAGE/240119-233735'
-#'1/0 h 7'= 'GraphSAGE/240119-235650'
-#'1/0 h 10'= 'GraphSAGE/240120-001558'
-'1/1 h 3'= 'GraphSAGE/240120-003624'
-'1/1 h 5'= 'GraphSAGE/240120-005647'
-#'1/1 h 7'= 'GraphSAGE/240120-011621'
-#'1/1 h 10'= 'GraphSAGE/240120-013648'
-
+'rand. class.'= 'randomClassifier/240120-204802'
+'0 / max'= 'GraphSAGE/240121-152330'
+'0 - mean'= 'GraphSAGE/240121-155350'
+#'0 - min'= 'GraphSAGE/240121-162016'
+#'0 / mul'= 'GraphSAGE/240121-165119'
+'100 / mean'= 'GraphSAGE/240121-183453'
+'300 / mean'= 'GraphSAGE/240121-190428'
+'500 / mean'= 'GraphSAGE/240121-193530'
+'1000 / mean'= 'GraphSAGE/240121-205157'

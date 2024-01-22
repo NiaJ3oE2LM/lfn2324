@@ -1,0 +1,6 @@
+config/GraphSAGE/300max.toml
+config/GraphSAGE/300mean.toml
+config/GraphSAGE/400max.toml
+config/GraphSAGE/400mean.toml
+config/GraphSAGE/500max.toml
+config/GraphSAGE/500mean.toml

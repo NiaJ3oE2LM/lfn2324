@@ -11,16 +11,15 @@ seed_name= 'seedSequence_p10'
 
 # model 
 batch_size= 10
-hidden_dim= 12
 # layer 1
-conv1.aggr= 'mean' # sum mean(d) min max mul
+conv1.aggr= 'max' # sum mean(d) min max mul
 conv1.depth= 1
-conv1.dropout= 0.2 # 0 deactivates
+conv1.dropout= 0.1 # 0 deactivated
 conv1.activation= true
 conv1.selfloops= true
 conv1.hasbias= true
 # layer 2
-conv2.switch= true
+conv2.hidden_dim= 10 # 0 deactivates
 conv2.aggr= 'max' # sum mean(d) min max mul
 conv2.depth= 1
 conv2.dropout= 0.1 # 0 deactivates
@@ -32,10 +31,10 @@ conv2.hasbias= true
 # optimizer Adam or SGD 
 opt.name= 'sgd' # case insensitive
 #opt.learning_rate= 3e-3 # Adam
-opt.learning_rate= 1e-1 # SGD
+opt.learning_rate= 6e-1 # SGD
 opt.weight_decay= 1e-8 # Adam, SGD
-opt.nesterov= true # SGD
-opt.momentum= 0.1 # SGD
+opt.nesterov= false # SGD
+opt.momentum= 0 # SGD
 opt.dampening= 0 # SGD
 
 # training

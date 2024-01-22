@@ -1,0 +1,5 @@
+{'always correct': 'randomClassifier/correct',
+ 'always incorrect': 'randomClassifier/incorrect',
+ 'always misleading': 'randomClassifier/misleading',
+ 'always useful': 'randomClassifier/useful',
+ 'rand. class.': 'randomClassifier/240120-204802'}
