@@ -1,0 +1,5 @@
+{'GraphSAGE.': 'GraphSAGE/240122-001632',
+ 'Simpe GC.': 'SimpleGC/240121-234629',
+ 'embed. MLP.': 'embeddingMLP/240122-151913',
+ 'rand. class.': 'randomClassifier/240120-204802',
+ 'trad. MLP': 'traditionalMLP/240122-125741'}

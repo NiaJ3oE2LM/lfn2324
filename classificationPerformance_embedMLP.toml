@@ -1,7 +1,7 @@
 # figure
 out_folder= 'img'
 out_name= 'embedMLP'
-title= 'DeepWalk (d.32) MLP embed / hdim.opt '
+title= 'DeepWalk MLP embed.d / hdim.opt '
 dpi= 300
 
 # true labels (same root folder)
@@ -11,10 +11,14 @@ true_data = '20240115-105053_output'
 root_folder= 'computed'
 [model_defs]
 'rand. class.'= 'randomClassifier/240120-204802'
-'5-20 / 0.adam'= 'embeddingMLP/240122-161735'
-'5-20 / 0.sgd'= 'embeddingMLP/240122-162601'
+#'5-20 / 0.adam'= 'embeddingMLP/240122-161735'
+#'5-20 / 0.sgd'= 'embeddingMLP/240122-162601'
 '10-20 / 0.adam'= 'embeddingMLP/240122-150155'
-'10-20 / 0.sgd'= 'embeddingMLP/240122-151034'
+#'10-20 / 0.sgd'= 'embeddingMLP/240122-151034'
 '16-20 / 0.adam'= 'embeddingMLP/240122-151913'
-'16-20 / 0.sgd'= 'embeddingMLP/240122-152742'
+#'16-20 / 0.sgd'= 'embeddingMLP/240122-152742'
+'20-20 / 0.adam'= 'embeddingMLP/240122-174102'
+'20-20 / 10.adam'= 'embeddingMLP/240122-180609'
+'16-20 / 10.adam'= 'embeddingMLP/240122-184040'
+'16-20 / 10.adam*'= 'embeddingMLP/240122-185950'
 

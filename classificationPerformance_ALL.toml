@@ -12,7 +12,7 @@ root_folder= 'computed'
 [model_defs]
 'rand. class.'= 'randomClassifier/240120-204802'
 'trad. MLP'= 'traditionalMLP/240122-125741'
-'embed. MLP.'= 'embeddingMLP/240122-151913'#
+'embed. MLP.'= 'embeddingMLP/240122-151913'
 'Simpe GC.'= 'SimpleGC/240121-234629'
 'GraphSAGE.'= 'GraphSAGE/240122-001632'
 

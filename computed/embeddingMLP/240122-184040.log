@@ -1,0 +1,35 @@
+{'data_name': '20240115-105053',
+ 'device': 'cuda',
+ 'embed': {'batch_size': 32,
+           'learning_rate': 0.02,
+           'max_epochs': 20,
+           'num_workers': 10,
+           'shuffle': True,
+           'test_iter': 150},
+ 'lay1': {'activation': True, 'dropout': 0.5},
+ 'lay2': {'activation': True, 'dropout': 0.5, 'hidden_dim': 5},
+ 'ma_threshold': 0.003,
+ 'ma_window': 50,
+ 'max_epochs': 500,
+ 'node2vec': {'context_size': 1,
+              'embedding_dim': 16,
+              'num_negative_samples': 2,
+              'p': 1.0,
+              'q': 1.0,
+              'sparse': True,
+              'walk_length': 5,
+              'walks_per_node': 3},
+ 'num_jobs': 1,
+ 'opt': {'learning_rate': 0.01, 'name': 'adam', 'weight_decay': 1e-08},
+ 'out_folder': 'embeddingMLP',
+ 'root_folder': 'computed',
+ 'save': True,
+ 'seed_name': 'seedSequence_p10',
+ 'test_share': 0.3}
+MLP(
+  (lay1): Linear(in_features=32, out_features=5, bias=True)
+  (activ1): ReLU()
+  (lay2): Linear(in_features=5, out_features=2, bias=True)
+  (activ2): ReLU()
+  (softmax): Softmax(dim=1)
+)

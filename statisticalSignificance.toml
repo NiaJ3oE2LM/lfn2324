@@ -1,7 +1,7 @@
 # figure
 out_folder= 'img'
 out_name= 'statisticalSignificance'
-title= 'remember to fix Nan values'
+title= 'significance of analytical features'
 
 # random collections processing
 root_folder= 'random'

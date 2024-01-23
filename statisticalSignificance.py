@@ -151,31 +151,36 @@ fig, axs= plt.subplots(1,2)
 fig.suptitle(f"{ARGS['title']} ({len(availableCollections)} samples)")
 
 # https://seaborn.pydata.org/generated/seaborn.violinplot.html
+axs[0].set_title("z-scores")
+violinSetup = {
+    'gridsize': len(availableCollections)//2,
+    'density_norm':'count',
+    'inner':'quart',
+    'legend': False,
+    }
+sns.violinplot(y= flatZScores.numpy(),
+               x= flatZLabels.numpy(),
+               ax= axs[0], **violinSetup)
+axs[1].set_title("p-values")
 violinSetup = {
     'gridsize': len(availableCollections)//2,
     'density_norm':'count',
     'split': True,
     'dodge': True,
     'gap': 0., 
-    'inner':"quart",
+    'inner':'quart',
+    'legend': False,
     }
-# generate violin plot
-axs[0].set_title("z-scores")
-sns.violinplot(y= flatZScores.numpy(),
-               x= flatZLabels.numpy(),
-               density_norm='count',
-               ax= axs[0])
-axs[1].set_title("p-values (neg)")
 sns.violinplot(y= cat([flatPosPValues, flatNegPValues]).numpy(),
                x= cat([flatPosLabels, flatNegLabels]).numpy(),
                hue= cat([flatPosHues, flatNegHues]).numpy(),
-               ax= axs[1],** violinSetup)
+               ax= axs[1],**violinSetup)
 
 
 # format axes
 for ax in axs:
     ax.set_xticks([i for i in range(len(featLabels))],
-                  labels= featLabels, rotation=60)
+                  labels= featLabels, rotation=90)
     # TODO add file names under the label with smaller size
     #ax.set_ylim(0,1)
 
