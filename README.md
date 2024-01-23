@@ -2,13 +2,10 @@
 
 _Learning from networks_ course (INQ0091104) at DEI UniPD, academic year 2023-2024, personal contribution of student ID: 2019122
 
-- [ ] **Abstract.** TODO at the end With biological applications in mind, we consider the Dihydrofolate reductase datasets in order to study the performance of two graph-based, learning methods: Simple Graph Convolution and GraphSAGE.
-
-- [x] remaining TODOs
-
-- [x] acronyms 3 letters
-
-- [ ] check navigation links
+**Abstract.** With biological applications in mind, the Dihydrofolate reductase (DHFR) learning problem is tackled with traditional machine learning techniques and two graph-based, learning methods: Simple Graph Convolution (SGC) and GraphSAGE. 
+Statistical significance of node closeness centrality and betweenness centrality is assessed by implementing a custom soft swapping random graph generator.
+Traditional Multi-Layer Perceptron (MLP) and DeepWalk embedding MLP models are trained in order to establish classification performance baseline: both perform better than a random classifier but the latter performs worse than the former, probably due to bad tuning.
+Finally, SGC model shows great learning potential but fails to generalise. All models are outperformed by GraphSAGE which also proves the most confident. Confidence of model predictions is evaluated using entropy-based information score. All models are trained multiple times using different random seeds.
 
 ## <a id='sec0'>-</a>Contents
 
