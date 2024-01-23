@@ -2,12 +2,12 @@
 
 _Learning from networks_ course (INQ0091104) at DEI UniPD, academic year 2023-2024, personal contribution of student ID: 2019122
 
-**Abstract.** With biological applications in mind, the Dihydrofolate reductase (DHFR) learning problem is tackled with traditional machine learning techniques and two graph-based, learning methods: Simple Graph Convolution (SGC) and GraphSAGE. 
+**Abstract.** The Dihydrofolate reductase (DHFR) learning problem is tackled with traditional machine learning techniques and two graph-based, learning methods: Simple Graph Convolution (SGC) and GraphSAGE. 
 Statistical significance of node closeness centrality and betweenness centrality is assessed by implementing a custom soft swapping random graph generator.
-Traditional Multi-Layer Perceptron (MLP) and DeepWalk embedding MLP models are trained in order to establish classification performance baseline: both perform better than a random classifier but the latter performs worse than the former, probably due to bad tuning.
-Finally, SGC model shows great learning potential but fails to generalise. All models are outperformed by GraphSAGE which also proves the most confident. Confidence of model predictions is evaluated using entropy-based information score. All models are trained multiple times using different random seeds.
+Traditional Multi-Layer Perceptron (MLP) and DeepWalk embedding MLP models are trained in order to establish a classification performance baseline: both perform better than a random classifier but the latter performs worse than the former, probably due to hyper-parameter tuning.
+Finally, SGC model shows great learning potential but fails to generalise confidently. All models are outperformed by GraphSAGE which also proves the most confident. Confidence of model predictions is evaluated using an entropy-based information score. All model configurations have been trained multiple times using different random seeds.
 
-## <a id='sec0'>-</a>Contents
+## <a id='sec0'>-</a> Contents
 
 [Introduction](#intro)
 
@@ -33,22 +33,22 @@ Finally, SGC model shows great learning potential but fails to generalise. All m
 
 Dihydrofolate reductase (DHFR) is an enzyme required for the survival of most cells as it is involved in the biosynthesis of essential cellular components: for this reason, it has attracted a lot of attention as a molecular target for various diseases. Researchers have reported different DHFR inhibitors in order to explore their therapeutic efficacy [[1]](#1).
 
-A set of 756 inhibitors of DHFR was assembled: activities for a particular strain of  DHFR were reported as $\mathrm{IC_{50}}$ values for the inhibition of the enzymatic reduction that converts dihydrofolate to tetrahydrofolate. A certain value was selected as the threshold for activity [[2]](#2).
+A set of 756 inhibitors of DHFR was assembled: activities for a particular strain of  DHFR were reported as $\mathrm{IC_{50}}$ values for the inhibition of the enzymatic reduction that converts *dihydrofolate* to *tetrahydrofolate*. A certain value was selected as the threshold for activity [[2]](#2).
 
 The original dataset DHFR is available at [chrsmrrs.github.io](https://chrsmrrs.github.io/datasets/docs/datasets/) [[3]](#3). The collection of networks is structured as follows:
 
 * each inhibitor (molecule) is represented as a graph: nodes are associated to atoms, while edges represent chemical bonds;
-* nodes are labeled with the name of the chemical element and 3 real-valued attributes represent the relative position of the atom (node) in the chemical compound (inhibitor);
-* the inhibiting property of each graph (chemical compound) is given as a graph-level binary label (+1,-1);
+* nodes are labelled with the name of the chemical element and 3 real-valued attributes represent the relative position of the atom (node) in the chemical compound (inhibitor);
+* the inhibiting property of each graph (chemical compound) is given as a graph-level binary label $\{0,1\}$;
 * edges are given as tuples of nodes and have neither attributes nor labels.
 
-| graph  | DHFR  | nodes              | DHFR                                | edges              | DHFR               |
-| ------ | ----- | ------------------ | ----------------------------------- | ------------------ | ------------------ |
-| count  | 756   | count              | 32075                               | count              | 33676 (undirected) |
-| labels | {0,1} | avg / 1 graph      | 42                                  | avg / 1 graph      | 45                 |
-|        |       | min, max / 1 graph | 20,71                               | min, max / 1 graph | 21, 73             |
-|        |       | attributes         | atom rel. position $\in\mathbb R^3$ | attributes         | N/A                |
-|        |       | labels             | atom ID $\in\mathbb N$              | labels             | N/A                |
+| graph  | DHFR  | nodes              | DHFR                                 | edges              | DHFR               |
+| ------ | ----- | ------------------ | ------------------------------------ | ------------------ | ------------------ |
+| count  | 756   | count              | 32075                                | count              | 33676 (undirected) |
+| labels | {0,1} | avg / 1 graph      | 42                                   | avg / 1 graph      | 45                 |
+|        |       | min, max / 1 graph | 20,71                                | min, max / 1 graph | 21, 73             |
+|        |       | attributes         | atom rel. position $\in \mathbb R^3$ | attributes         | N/A                |
+|        |       | labels             | atom ID $\in\mathbb N$               | labels             | N/A                |
 
 The **DHFR learning task** consist in predicting the correct label of the graph by analysing the information stored in the node features (of each node in the graph), and the connections between the nodes (chemical bonds).
 
@@ -314,7 +314,7 @@ in which:
 
 This score allows to assess the confidence of the model prediction with respect to the correct answer. The model prediction is chosen using $\arg\max$ of the posterior probabilities but the probability with which the model chooses the right answer might be smaller than that of the prior distribution. In such case the  score penalises the answer. The score is null when the model chooses always the right class by replicating the prior distribution.  Score 1 is obtained only when the gives all correct answers with posterior 1 (categorical); whereas a score less than -1 is obtained when all predictions are wrong with probability one.
 
-**Warning**. as explained in [[8]](#8) the score is asymmetric in the sense that is penalises more a confident wrong prediction than a correct misleading prediction. For this reason the score might fall below the -1 mark is the model performs particularly bad.
+**Warning**. as explained in [[8]](#8) the score is asymmetric in the sense that is penalises more a confident wrong prediction than a correct misleading prediction. For this reason the score might fall below the -1 mark if the model performs particularly bad.
 
 ## Final results
 
