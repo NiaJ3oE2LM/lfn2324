@@ -9,8 +9,7 @@ root_folder= 'computed'
 input_name= '20240115-105053'
 seed_name= 'seedSequence_p10'
 
-# model 
-batch_size= 10
+# NN model 
 # layer 1
 conv1.aggr= 'mean' # sum mean(d) min max mul
 conv1.dropout= 0.2
@@ -31,6 +30,7 @@ opt.momentum= 0.1 # SGD
 opt.dampening= 0 # SGD
 
 # training
+batch_size= 10
 test_share= 0.3
 max_epochs= 300
 # early stopping

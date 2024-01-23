@@ -2,7 +2,13 @@
 
 _Learning from networks_ course (INQ0091104) at DEI UniPD, academic year 2023-2024, personal contribution of student ID: 2019122
 
-**Abstract.** TODO at the end With biological applications in mind, we consider the Dihydrofolate reductase datasets in order to study the performance of two graph-based, learning methods: Simple Graph Convolution and GraphSAGE.
+- [ ] **Abstract.** TODO at the end With biological applications in mind, we consider the Dihydrofolate reductase datasets in order to study the performance of two graph-based, learning methods: Simple Graph Convolution and GraphSAGE.
+
+- [ ] remaining TODOs
+
+- [ ] acronyms 3 letters
+
+- [ ] check navigation links
 
 ## <a id='sec0'>-</a>Contents
 
@@ -47,9 +53,9 @@ The original dataset DHFR is available at [chrsmrrs.github.io](https://chrsmrrs.
 |        |       | attributes         | atom rel. position $\in\mathbb R^3$ | attributes         | N/A                |
 |        |       | labels             | atom ID $\in\mathbb N$              | labels             | N/A                |
 
-The **DHFR learning task** consist in TODO explain the learning task
+The **DHFR learning task** consist in predicting the correct label of the graph by analysing the information stored in the node features (of each node in the graph), and the connections between the nodes (chemical bonds).
 
-[Sec.1](#sec1) illustrates different tentatives in generating random collections of graphs starting from the observed data in DHFR with the final goal of assessing statistical significance of analytical node features. Resulting z-scores and p-values are analysed but look inconclusive, and therefore all available features are included as input data.
+[Sec.1](#sec1) explores different ideas in generating random collections of graphs starting from the observed data in DHFR with the final goal of assessing statistical significance of analytical node features to enhance input data before Machine Learning (ML) operations. Resulting z-scores and p-values are analysed but could be improved considerably by taking into account different analytical features (see appendix [A](#anxA)).
 
 Sections [2](#sec2) to [6](#sec6) describe the different machine learning models used in tackling the DHFR learning problem. All models are developed in a dedicated python script and configured with a dedicated `.toml` file
 
@@ -61,34 +67,35 @@ Sections [2](#sec2) to [6](#sec6) describe the different machine learning models
 
 Results are presented and discussed in [Sec.7](#sec7), where the classification performance of all five models is compared using two indexes: a standard score, and a more advanced information score [[8]](#8). While the former  simply counts the number of correct predictions, the latter compares the posterior class probability against the original dataset prior in order to assess the confidence of the model in predicting a class.
 
-**Overall**, results suggests that TODO summary of conclusions
+**Overall**, the following results are claimed
 
-+ statistical significance
++ node closeness centrality proves numerically more statistically significant than node betweenness centrality; significance of node degree, and node clustering could not be assessed. Loop (motif) count should be considered as a next step
 
-+ traditional MLP vs embedding MLP
++ traditional MLP shows better performance as (DeepWalk) embedding MLP, however both models outperform a random classifier. This is explained by the difficult tuning of the embedding MLP model due to the greater number of hyper-parameters as compared with the traditional MLP.
 
-+ graphSASGE against SImple graph convolution
++ SImple Graph Convolution scores similarly to the traditional MLP but shows lack of confidence when making predictions. This suggests that further tuning is required, particularly by exploring different aggregation functions in the message passing mechanism.
 
-All computations were performed offline on a *i7-9750H Intel CPU* laptop equipped with *Nvidia Quadro T1000 Mobile GPU* running an updated rolling release of EndeavourOS (6.7.0-arch3-1).
++ GraphSAGE architecture outperforms all models showing prediction scores as with as 85% with remarkable confidence in the model predictions.
+
+All computations were performed offline on a *i7-9750H Intel CPU*  and *Nvidia Quadro T1000 Mobile GPU* running Linux *kernel 6.7.0-arch3-1*.
 Most of the python scripts are configured entirely through `toml` files that can usually be stored on a separate location (to be fed as first positional argument on the python call). All models have been tuned multiple times with the same parameters but according to different random seed (see `computed/seedSequence_p10.txt`). 
-Modules installed on the python virtual environment for this projectare listed (pip freeze) in file `DEPENDENCIES.txt`
+Modules installed on the python virtual environment for this project are listed (pip freeze) in file `DEPENDENCIES.txt`
 
-# <a id="sec1">1.</a> Statistically significant features [\^](#secsec)
-
-TODO why need to generate random graphs
+# <a id="sec1">1.</a> Statistically significant features [\^](#sec0)
 
 As the structure of a graph represents a molecule, node degree and node labels should both be considered by any good random generator. Since each node corresponds to an atom (node label), the former represents the number of chemical bonds of the node with other atoms in the chemical compound. On the other hand, the number of possible chemical bonds is related to the chemical element identified by the the node label.
 
-Mandatory sanity checks on the resulting random graph:
+Mandatory *sanity* checks on the resulting random graph, in order to comply with basic chemical/physical intuition:
 
-- should be undirected and have no self-loops
-- should have no isolated nodes and count only one connected component with all the original nodes
-- node degree distribution should resemble that of the original molecule
+- the random graph should be undirected and have no self-loops
+- the random graph should have no isolated nodes and count only one connected component with all the original nodes
+- the random graph node degree distribution should resemble that of the original molecule
 
-Other heuristic indicators:
+Other heuristic indicators that could be used to distinguish better random generators:
 
 - presence of elongated chains
-- presence of tree like endings, usually associated to hydrogen bonding with other elements
+- presence of low number of loops with length greater than 3
+- presence of tree like endings, usually associated to Hydrogen bonding with other elements
 
 ## Random graph generation
 
@@ -141,7 +148,7 @@ The following node features were implemented as custom PyG dataset tranforms by 
 | closeness centrality   | `BaseTranform`   | NetworkX   | [closeness_centrality](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.closeness_centrality.html#networkx.algorithms.centrality.closeness_centrality)       |                                                                                                                                                                                                                                                           |
 | betweenness centrality | `BaseTranform`   | NetworkX   | [betweenness_centrality](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality.html#networkx.algorithms.centrality.betweenness_centrality) |                                                                                                                                                                                                                                                           |
 | node clustering        | `BaseTranform`   | NetworkX   | [clustering](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.cluster.clustering.html#networkx.algorithms.cluster.clustering)                                           |                                                                                                                                                                                                                                                           |
-| loop (motif) count     |                  | Graph-tool | [clustering.motifs](https://graph-tool.skewed.de/static/doc/autosummary/graph_tool.clustering.motifs.html)                                                                                                          | see [A](#anx1)                                                                                                                                                                                                                                            |
+| loop (motif) count     |                  | Graph-tool | [clustering.motifs](https://graph-tool.skewed.de/static/doc/autosummary/graph_tool.clustering.motifs.html)                                                                                                          | see appendix [A](#anx1)                                                                                                                                                                                                                                   |
 
 The node clustering coefficient is identically 0 for all molecules. Inspections from pictorial representations of the molecules seem to confirm this result, as no triangle can be seen.
 
@@ -153,9 +160,7 @@ Graphlet count is not straight forward, and it is not readily implemented nor in
 
 Script `statisticalSignificance.py` is configured by `statisticalSignificance.toml` and computes violin plots of p-values and z-scores approximated distribution for the computed analytical features. P-values have been computed for both probabilities greater and smaller than the value observed in the true DHFR graph, for all nodes in all graphs. In particular, the score is first computed for each node among all possible variations (of the same node) in the available random collections, and then the value is plotted for all nodes in all graphs of the collection. 
 
-The plot suggest that features betweenness centrality and closeness centrality are mildly statistically significant. On the one hand, node degree could not be assessed because the chosen random generator identically preserves the degree distribution of the original dataset. On the other hand, node clustering was reported as null for all DHFR dataset and therefore there is little information in knowing that possible random variations have a different value.            
-            
-     
+The plot suggest that features betweenness centrality and closeness centrality are mildly statistically significant. On the one hand, node degree could not be assessed because the chosen random generator identically preserves the degree distribution of the original dataset. On the other hand, node clustering was reported as null for all DHFR dataset and therefore there is little information in knowing that possible random variations have a different value. 
 
 ## Data pre-processing
 
@@ -213,7 +218,7 @@ Graph embedding is a technique that allows to represent the information stored i
 
 Once the node embedding have been computed, the new representation needs to be condensed in order to represent every single node. Here, it is chosen to use the same condensation function used for traditional MLP in [Sec.3](#sec3), namely to stack one after the other: the *node embedding mean* and the *node embedding variance*.
 
-PyG implementation class [node2vec](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.Node2Vec.html) is used in a 2-step script `embeddingMLP.py`: it performs both the embedding optimisation and the MLP training in two nested loops. PyG allows to compute DeepWalk embedding by resorting to the node2vec module with settings $p=q=1$. The script is configured by `embeddingMLP.toml` where the hyper-parameters of the model are exposed :
+PyG implementation class [node2vec](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.Node2Vec.html) is used in a two-step script `embeddingMLP.py`: it performs both the embedding optimisation and the MLP training in two nested loops. PyG allows to compute DeepWalk embedding by resorting to the node2vec module with settings $p=q=1$. The script is configured by `embeddingMLP.toml` where the hyper-parameters of the model are exposed :
 
 | node2vec               | layer 1                    | layer 2                             | optimiser                                       |
 | ---------------------- | -------------------------- | ----------------------------------- | ----------------------------------------------- |
@@ -221,35 +226,37 @@ PyG implementation class [node2vec](https://pytorch-geometric.readthedocs.io/en/
 | walk_length\*          | activation (default: true) | dropout                             | SGD: learning rate, weight decay, momentum, ... |
 | context_size\*         |                            | activation (default: true)          |                                                 |
 | walks_per_node\*       |                            |                                     |                                                 |
-| num_negative_samples\* |                            |                                     |                                                 |
-| \* set arbitrarily     |                            |                                     |                                                 |
+| num_negative_samples\* |                            |                                     | * set arbitrarily                               |
 
-**Warning.** Modify PyG `node2vec.py` lines 120 and 134 and change `dim=0` to `dim=1` in the `torch.cat` call of the `return` on functions `pos_sample` and `neg_sample`. At time of writing it is not clear if this is a bug in PyG implementation, an issue has been open on the developers repository TODO issue number
+**Warning.** Modify PyG `node2vec.py` lines 120 and 134 and change `dim=0` to `dim=1` in the `torch.cat` call of the `return` on function definitions `pos_sample()` and `neg_sample()`. At time of writing, it is not clear if this is a bug in PyG implementation, an issue has been open on the developers repository TODO issue number
 
 ## Tuning procedure and model selection
 
-First the optimiser and the embedding dimensions are studies, then the optimal MLP hidden layer dimension is selected by using the best optimiser. All other parameters are set by naive intuition and should require more study.
+First the optimiser and the embedding dimensions are studied, then the optimal MLP hidden layer dimension is selected by using the best optimiser. All other parameters are set by naive intuition and should require more study.
 
 ![](img/embedMLP_240122-174738.png)
 
-TODO explain first figure, introduce second
+The information score in figure above shows how the Adam optimiser performs better than the SGD. Among the Adam's runs, it possible to notice how the optimal embedding dimension is 16 units. Such configuration is therefore to explore the benefit of the hidden layer. Figure below shows how the hidden layer is not helping the learning task.
 
 ![](img/embedMLP_240122-184559.png)
 
-TODO Model XXX is therefore retained as best performance indicator of the architecture DeepWalk + MLP and compared against other models in [Sec.7](#sec7), training log and output predictions are stored as **XXXX** in `computed/embedingMLP/`.
+Model having embedding dimension 16 and a single MLP layer is therefore chosen as best performance indicator of the architecture DeepWalk + MLP and compared against other models in [Sec.7](#sec7), training `.log` and output `.pt` predictions are stored as **240122-151913** in `computed/embedingMLP/`.
 
 # <a id="sec5">5.</a> Simple Graph Convolution [\^](#sec0)
 
-The Simple Graph Convolution (SGC) model was introduced in [[5]](#5) and tries to simplify the parametric complexity if standard graph convolution networks by getting rid of intermediate activation functions and condensing the resulting parameters. 
+The Simple Graph Convolution (SGC) model was introduced in [[5]](#5) and tries to simplify the parametric complexity of standard graph convolution networks by getting rid of intermediate activation functions and condensing the resulting parameters. The possibility to neglect the in-layer activation function is a fundamental hypothesis of this idea.
 
-PyG implementation class [SGConv](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.SGConv.html#torch_geometric.nn.conv.SGConv)  is used in a 2 layer convolution model in script `graphNN_SGC.py`. The script is configured by `graphNN_SGC.toml` where the hyper-parameters of the model are exposed :
+PyG implementation class [SGConv](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.SGConv.html#torch_geometric.nn.conv.SGConv)  is used in a two-layer-convolution model in script `graphNN_SGC.py`. The script is configured by `graphNN_SGC.toml` where the hyper-parameters of the model are exposed :
 
-| hidden dim.    | aggregation | depth ($K$) |
-| -------------- | ----------- | ----------- |
-| 0 (1 layer)    | mean        | 1           |
-| > 1 (2 layers) | max         | 2           |
-|                | min         | 2           |
-|                | mul         |             |
+| layer 1 (conv.)                           | layer 2 (conv.)                   | optimiser                                   |
+| ----------------------------------------- | --------------------------------- | ------------------------------------------- |
+| aggregation: mean, max, min, mul          | hidden dimension: (0 deactivated) | Adam (same parameters as in previous model) |
+| depth ( $K$ in message passing) : 1, 2, 3 | aggregation (same)                | SGD (same parameters as in previous model)  |
+| dropout                                   | depth (same)                      |                                             |
+| activation: (default: true)\*             | dropout                           |                                             |
+| self-loops: (default: true)\*             | activation\*                      |                                             |
+| bias: (default: true)\*                   | self-loops*                       |                                             |
+|                                           | bias*                             | \* set arbitrarily                          |
 
 ## Tuning procedure and model selection
 
@@ -257,24 +264,24 @@ The depth and aggregation hyper-parameters are analysed first by tuning a single
 
 ![](img/tuningSGC_240121-202118.png)
 
-The effectiveness of the hidden layer is studied by training 2 SGC layers of depth 1 or 2 and aggregation function mean or max. Data suggest the max aggregation function (in message passing) peforms best with a hidden layer dimension of 10.
+The effectiveness of the hidden layer is studied by training 2 SGC layers of depth 1 or 2 and aggregation function mean or max. Data suggest the max aggregation function (in message passing) performs best with a hidden layer dimension of 10.
 
 ![](img/tuningSGC_240122-113411.png)
 
-This SGC is therefore chosen as best performance indicator of SGC and compared against other models in [Sec.7](#sec7), training `.log` and output `.pt` predictions are stored as **XXXX** in `computed/SimpleGC/`.
+Model with max aggregation function ($K=1$) and hidden layer dimension 10 is therefore chosen as best performance indicator of SGC and compared against other models in [Sec.7](#sec7), training `.log` and output `.pt` predictions are stored as **240121-234629** in `computed/SimpleGC/`.
 
 # <a id="sec6">6.</a> GraphSAGE [\^](#sec0)
 
-TODO filler paragraph [[6]](#6)
+GraphSAGE convolution networks were introduced in [[6]](#6), and can be considered and advanced topic in the field of graph-based machine learning.
 
-PyG implementation class [SAGEConv](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.SAGEConv.html#torch_geometric.nn.conv.SAGEConv)  is used in a 2 layer convolutional model in script `graphNN_GraphSAGE.py`. The script is configured by `graphNN_GraphSAGE.toml` where the hyper-parameters of the model are exposed :
+PyG implementation class [SAGEConv](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.SAGEConv.html#torch_geometric.nn.conv.SAGEConv)  is used in a two-layer-convolution model in script `graphNN_GraphSAGE.py`. The script is configured by `graphNN_GraphSAGE.toml` where the hyper-parameters of the model are exposed :
 
-| hidden dim.    | aggregator | optimizer |
-| -------------- | ---------- | --------- |
-| 0 (1 layer)    | mean       | Adam      |
-| > 1 (2 layers) | max        | SGD       |
-|                | min        |           |
-|                | mul        |           |
+| layer 1 (conv.)                  | layer 2 (conv.)               | optimiser                                   |
+| -------------------------------- | ----------------------------- | ------------------------------------------- |
+| aggregation: mean, max, min, mul | hidden dimension              | Adam (same parameters as in previous model) |
+| dropout                          | aggregation (same)            | SGD (same parameters as in previous model)  |
+| activation: (default: true)\*    | dropout                       |                                             |
+|                                  | activation: (default: true)\* | \* set arbitrarily                          |
 
 ## Tuning procedure and model selection
 
@@ -286,7 +293,7 @@ The figure above does not suggest any aggregation function, and based on the gat
 
 ![](img/tuningGraphSAGE_240122-095610.png)
 
-GraphSAGE with max agregation and a hidden layer of 400 units is therefore chosen as best performance indicator of SGC and compared against other models in [Sec.7](#sec7), training log and output predictions are stored as **XXXX** in `computed/GraphSAGE/`.
+Model with max aggregation and a hidden layer of 400 units is therefore chosen as best performance indicator of GraphSAGE and compared against other models in [Sec.7](#sec7), training `.log` and output `.pt` predictions are stored as **240122-001632** in `computed/GraphSAGE/`.
 
 # <a id="sec7">7.</a> Classification performance results [\^ ](#sec0)
 
@@ -294,21 +301,23 @@ The script  `classificationPerformance.py` is configured by a `.toml` file that 
 
 ## Information score
 
-[[8]](#8) proposes an information score computed as follows
+[[8]](#8) proposes an information score computed as follows:
 
 $$I_r = I_a/E \quad I_a = \frac 1 T \sum_j I(j) \quad I:{\set{1,\dots, k}\atop C}{\to \atop\mapsto}{\R \cap (-\infty, 1]\atop \begin{cases} V_c(C) & P'(C)\geq P(C) \\ V_m(C) & \text{otw} \end{cases}}$$
 
 where:
 
 + $P(\bullet)$ and $P'(\bullet)$ denote the prior and posterior (the classifier) probabilities for a given class. Usually the prior is estimated from the relative frequencies computed using the training set
-+ the value for a useful prediction of class $C$ is $V_c(C)=-\log_2P(C)+ \log_2P'(C)$
-+ the value for a misleading prediction is $V_m(C) = -\log_2[1-P(C)]+ \log_2[1-P'(C)]$
++ the value for a *useful* prediction when the true class is $C$ is $V_c(C)=-\log_2P(C)+ \log_2P'(C)$. The prediction is *useful* when the posterior probability improves the prior for that class.
++ the value for a *misleading* prediction when the true class is $C$ is $V_m(C) = -\log_2[1-P(C)]+ \log_2[1-P'(C)]$. The prediction is considered *misleading* if the posterior changes with respect to the prior in the wrong direction.
 + $T$ is the number of predictions
 + the entropy $E = \sum_i P(i) \log_2P(i)$ for all classes $i$, is assumed to be the same for training and test sets.
 
 ![](img/informationScore_240120-221023.png)
 
-This score allows to assess the confidence of the model prediction with respect to the correct answer. The model prediction is chosen using $\arg\max$ of the posterior probabilities but the probability with which the model chooses the right answer might be smaller than that of the prior distribution. In such case the  score penalises the answer. The score is null when the model chooses always the right class by replicating the prior distribution.  Score 1 is obtained only when the gives all correct answers with posterior 1 (categorical); whereas a score less than -1 is obtained when all predictions are wrong with probability one.~~~~
+This score allows to assess the confidence of the model prediction with respect to the correct answer. The model prediction is chosen using $\arg\max$ of the posterior probabilities but the probability with which the model chooses the right answer might be smaller than that of the prior distribution. In such case the  score penalises the answer. The score is null when the model chooses always the right class by replicating the prior distribution.  Score 1 is obtained only when the gives all correct answers with posterior 1 (categorical); whereas a score less than -1 is obtained when all predictions are wrong with probability one.
+
+**Warning**. as explained in [[8]](#8) the score is asymmetric in the sense that is penalises more a confident wrong prediction than a correct misleading prediction. For this reason the score might fall below the -1 mark is the model performs particularly bad.
 
 ## Final results
 
@@ -326,15 +335,13 @@ Final comparison of all best models is shown below. Tuned hyper-parameters for a
 
 The overall study suggests the following conclusions:
 
-+ traditional
++ traditional MLP on condensed node features improves considerably on the random classifier. The information score remains below half the value of the correct predictions suggesting that the model is not very confident about the correct predictions.
 
-+ embedding MLP very hard to train because of the huge amount of hyper-parameters. Higher embedding optimization scores tends to make the model suffer form overfitting. 
++ DeepWalk embedding MLP proves worse than traditional MLP: this is probably explained by bad tuning considering the amount of hyper-parameters of this architecture. Information score suggests that this model is still better that a random classifier but is less confident than the traditional MLP.
 
-+ simple graph convolution looks promising but fails to generalize with sufficient confidence. Different aggregation function should be studied
++ Simple Graph Convolution looks promising but fails to generalise with sufficient confidence. The model scores comparably to traditional MLP when using the standard score but reveals great uncertainty when analysing the information score. Different aggregation functions should be explored.
 
-+ GraphSAGE outperforms all model 
-
-TODO remember to update the claimed results in the intro
++ GraphSAGE outperforms all models with great margin both in the standard score and the information score. This means that not only the model gets more correct predictions cut is actually more confident when making the prediction.
 
 # <a id="refs">-</a> References [\^](#sec0)
 
@@ -357,7 +364,7 @@ vol. 43, no. 6, pp. 1906–1915, 2003, doi: [10.1021/ci034143r](https://doi.org/
 
 # <a id="anx1">A.</a> Future work [\^](#sec0)
 
-- [ ] A modified dataset DHFR-MD is available at [networkrepository.com](https://networkrepository.com/DHFR-MD.php) [[4]](#4) but has not been considered in the current stage of this work because TODO
+- [ ] A modified dataset DHFR-MD is available at [networkrepository.com](https://networkrepository.com/DHFR-MD.php) [[4]](#4) but has not been considered in the current stage of this work because it requires dealing with weighted, fully connected graphs.
 
 - [ ] [Sec.1](#1) **Advanced rangom generator.** The [DIG: Dive into Graphs](https://diveintographs.readthedocs.io/en/latest/) framework provides the implementation of several advanced algorithms for [graph generation](https://diveintographs.readthedocs.io/en/latest/tutorials/graphdf.html) :
   
@@ -381,4 +388,4 @@ vol. 43, no. 6, pp. 1906–1915, 2003, doi: [10.1021/ci034143r](https://doi.org/
   
   + the same could be done for the for the information score but is more involved because the prior probabilities might differ between the training set and the validation set
   
-  + more random seeds were prepared in `computed/seedsSequanece_pn20` but never used due to time constraints
+  + more random seeds were prepared in `computed/seedSequanece_pn20` but never used due to time constraints
