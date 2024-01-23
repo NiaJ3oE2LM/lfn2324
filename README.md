@@ -4,9 +4,9 @@ _Learning from networks_ course (INQ0091104) at DEI UniPD, academic year 2023-20
 
 - [ ] **Abstract.** TODO at the end With biological applications in mind, we consider the Dihydrofolate reductase datasets in order to study the performance of two graph-based, learning methods: Simple Graph Convolution and GraphSAGE.
 
-- [ ] remaining TODOs
+- [x] remaining TODOs
 
-- [ ] acronyms 3 letters
+- [x] acronyms 3 letters
 
 - [ ] check navigation links
 
@@ -301,11 +301,11 @@ The script  `classificationPerformance.py` is configured by a `.toml` file that 
 
 ## Information score
 
-[[8]](#8) proposes an information score computed as follows:
+[[8]](#8) proposes an information score computed as follows: let $I_r = I_a/E$ denote the relative information, where $I_a = \frac 1 T \sum_j I(j)$ is the average information score on all predictions. Define:
 
-$$I_r = I_a/E \quad I_a = \frac 1 T \sum_j I(j) \quad I:{\set{1,\dots, k}\atop C}{\to \atop\mapsto}{\R \cap (-\infty, 1]\atop \begin{cases} V_c(C) & P'(C)\geq P(C) \\ V_m(C) & \text{otw} \end{cases}}$$
+$$I:{\set{1,\dots, k}\atop C}{\to \atop\mapsto}{\mathbb R \cap (-\infty, 1]\atop \begin{cases} V_c(C) & P'(C)\geq P(C) \\ V_m(C) & \text{otherwise} \end{cases}}$$
 
-where:
+in which:
 
 + $P(\bullet)$ and $P'(\bullet)$ denote the prior and posterior (the classifier) probabilities for a given class. Usually the prior is estimated from the relative frequencies computed using the training set
 + the value for a *useful* prediction when the true class is $C$ is $V_c(C)=-\log_2P(C)+ \log_2P'(C)$. The prediction is *useful* when the posterior probability improves the prior for that class.
